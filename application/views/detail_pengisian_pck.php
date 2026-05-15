@@ -7,7 +7,7 @@
 </div>
 
 <nav class="hk-breadcrumb" aria-label="breadcrumb">
-    <ol class="breadcrumb breadcrumb-light bg-transparent">
+    <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="javascript:;" data-page="pck">Periode Perjanjian Kinerja</a></li>
         <li class="breadcrumb-item active" aria-current="page">Detail Pengisian Capaian Kinerja</li>
     </ol>
@@ -23,7 +23,7 @@
                 <div class="d-flex align-items-center card-action-wrap">
                     <?php if ($pengisian->status > 0): ?>
                         <button type="button" class="btn btn-sm btn-success mr-2"
-                            onclick="previewPCK(<?= $pengisian->id ?>)">
+                            onclick="previewPCK(<?= $pengisian->id ?>, <?= $pengisian->status ?>)">
                             <i class="zmdi zmdi-file-text"></i> Cetak Capaian Kinerja
                         </button>
                     <?php endif; ?>
@@ -35,7 +35,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6 mb-3 mb-md-0">
+                    <div class="col-md-6 mb-0">
                         <table class="table table-sm table-borderless mb-0">
                             <tr>
                                 <th class="pl-0 text-muted" width="40%">Nama Periode</th>
@@ -52,7 +52,7 @@
                     <div class="col-md-6">
                         <table class="table table-sm table-borderless mb-0">
                             <tr>
-                                <th class="pl-0 text-muted">Bulan</th>
+                                <th class="pl-0 text-muted"  width="40%">Bulan</th>
                                 <td>
                                     <?php
                                     $namaBulan = [
@@ -109,14 +109,22 @@
         <!-- /Page Alerts -->
 
         <div id="tabelDetailPCK">
-            <div class="page-wrapper">
-                <div class="page-content">
-                    <div class="text-center p-4">
-                        <div class="spinner-border text-primary" role="status"></div>
+            <!-- Skeleton loading -->
+            <div class="tabel-detail-pk-skeleton">
+                <div class="skeleton-card-header">
+                    <div class="skeleton skeleton-card-title"></div>
+                    <div class="skeleton-btn-group">
+                        <div class="skeleton skeleton-btn"></div>
+                        <div class="skeleton skeleton-btn"></div>
                     </div>
-                    <div class="text-center">
-                        <span>Memuat Data Detail Capaian Kinerja... Harap Tunggu Sebentar</span>
-                    </div>
+                </div>
+                <div class="skeleton-table-section">
+                    <div class="skeleton skeleton-table-head"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                    <div class="skeleton skeleton-table-row"></div>
                 </div>
             </div>
         </div>
@@ -287,10 +295,42 @@
                         </button>
                     </div>
                     <div class="modal-body" id="preview-pck-content" style="max-height: 80vh; overflow-y: auto;">
-                        <!-- Content akan di-load via AJAX -->
-                        <div class="text-center py-5">
-                            <i class="fas fa-spinner fa-spin fa-2x"></i>
-                            <p class="mt-2">Memuat data...</p>
+                        <!-- Skeleton loading -->
+                        <div class="pck-skeleton">
+                            <div class="skeleton-header-pk">
+                                <div class="skeleton-logo"></div>
+                                <div class="skeleton-title-block">
+                                    <div class="skeleton skeleton-title"></div>
+                                    <div class="skeleton skeleton-subtitle"></div>
+                                </div>
+                            </div>
+                            <div class="skeleton-divider"></div>
+                            <div class="skeleton-info-row">
+                                <div class="skeleton-info-item">
+                                    <div class="skeleton skeleton-label"></div>
+                                    <div class="skeleton skeleton-value"></div>
+                                </div>
+                                <div class="skeleton-info-item">
+                                    <div class="skeleton skeleton-label"></div>
+                                    <div class="skeleton skeleton-value"></div>
+                                </div>
+                                <div class="skeleton-info-item">
+                                    <div class="skeleton skeleton-label"></div>
+                                    <div class="skeleton skeleton-value"></div>
+                                </div>
+                            </div>
+                            <div class="skeleton-table-wrap">
+                                <div class="skeleton skeleton-table-header"></div>
+                                <div class="skeleton skeleton-row-pk"></div>
+                                <div class="skeleton skeleton-row-pk"></div>
+                                <div class="skeleton skeleton-row-pk"></div>
+                                <div class="skeleton skeleton-row-pk"></div>
+                                <div class="skeleton skeleton-row-pk"></div>
+                            </div>
+                            <div class="skeleton-footer-pk">
+                                <div class="skeleton skeleton-footer-row"></div>
+                                <div class="skeleton skeleton-footer-row"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">

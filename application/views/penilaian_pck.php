@@ -7,7 +7,7 @@
 </div>
 
 <nav class="hk-breadcrumb" aria-label="breadcrumb">
-    <ol class="breadcrumb breadcrumb-light bg-transparent">
+    <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="javascript:;" data-page="pck">Periode Perjanjian Kinerja</a></li>
         <li class="breadcrumb-item active" aria-current="page">Penilaian Capaian Kinerja</li>
     </ol>
@@ -61,14 +61,18 @@
                             </div>
                             <div class="row">
                                 <div class="col-12" id="tabelPeriodePCK">
-                                    <div class="page-wrapper">
-                                        <div class="page-content">
-                                            <div class="text-center p-4">
-                                                <div class="spinner-border text-primary" role="status"></div>
+                                    <!-- Skeleton loading -->
+                                    <div class="periode-pk-skeleton">
+                                        <div class="skeleton-card">
+                                            <div class="skeleton-card-header">
+                                                <div class="skeleton skeleton-card-title"></div>
                                             </div>
-                                            <div class="text-center">
-                                                <span>Memuat Data Bulan Penilaian Capaian Kinerja... Harap Tunggu
-                                                    Sebentar</span>
+                                            <div class="skeleton-table-section">
+                                                <div class="skeleton skeleton-table-head"></div>
+                                                <div class="skeleton skeleton-table-row"></div>
+                                                <div class="skeleton skeleton-table-row"></div>
+                                                <div class="skeleton skeleton-table-row"></div>
+                                                <div class="skeleton skeleton-table-row"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -87,14 +91,18 @@
                         </div>
                         <div class="row">
                             <div class="col-12" id="tabelPenilaianPCK">
-                                <div class="page-wrapper">
-                                    <div class="page-content">
-                                        <div class="text-center p-4">
-                                            <div class="spinner-border text-primary" role="status"></div>
+                                <!-- Skeleton loading -->
+                                <div class="periode-pk-skeleton">
+                                    <div class="skeleton-card">
+                                        <div class="skeleton-card-header">
+                                            <div class="skeleton skeleton-card-title"></div>
                                         </div>
-                                        <div class="text-center">
-                                            <span>Memuat Data Bulan Penilaian Capaian Kinerja Bawahan... Harap Tunggu
-                                                Sebentar</span>
+                                        <div class="skeleton-table-section">
+                                            <div class="skeleton skeleton-table-head"></div>
+                                            <div class="skeleton skeleton-table-row"></div>
+                                            <div class="skeleton skeleton-table-row"></div>
+                                            <div class="skeleton skeleton-table-row"></div>
+                                            <div class="skeleton skeleton-table-row"></div>
                                         </div>
                                     </div>
                                 </div>

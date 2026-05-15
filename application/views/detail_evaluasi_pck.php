@@ -1,8 +1,7 @@
 <nav class="hk-breadcrumb" aria-label="breadcrumb">
-    <ol class="breadcrumb breadcrumb-light bg-transparent">
-        <li class="breadcrumb-item"><a href="javascript:;" data-page="pck">Periode Perjanjian KinerjaK</a></li>
-        <li class="breadcrumb-item"><a href="javascript:;" data-page="penilaian_pck"
-                data-id="<?= $periode_id ?>">Penilaian Capaian Kinerja</a></li>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="javascript:;" data-page="pck">Periode Perjanjian Kinerja</a></li>
+        <li class="breadcrumb-item"><a href="javascript:;" data-page="penilaian_pck" data-id="<?= $periode_id ?>">Penilaian Capaian Kinerja</a></li>
         <li class="breadcrumb-item active" aria-current="page">Evaluasi Capaian Kinerja Pegawai</li>
     </ol>
 </nav>
@@ -60,7 +59,26 @@
 
 <div class="row">
     <div class="col">
-        <div id="tabelDetailPCKStaf"></div>
+        <div id="tabelDetailPCKStaf">
+            <!-- Skeleton loading -->
+            <div class="tabel-detail-pk-skeleton">
+                <div class="skeleton-card-header">
+                    <div class="skeleton skeleton-card-title"></div>
+                    <div class="skeleton-btn-group">
+                        <div class="skeleton skeleton-btn"></div>
+                        <div class="skeleton skeleton-btn"></div>
+                    </div>
+                </div>
+                <div class="skeleton-table-section">
+                    <div class="skeleton skeleton-table-head"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="modal fade" id="modalNilaiUraianTugas" tabindex="-1" role="dialog"

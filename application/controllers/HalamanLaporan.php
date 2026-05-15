@@ -401,14 +401,14 @@ class HalamanLaporan extends MY_Controller
 
             // Header Tabel
             $html .= '<thead>';
-            $html .= '<tr style="background-color: #d9ead3;">';
+            $html .= '<tr>';
             $html .= '<th rowspan="2" style="width: 3%; border: 1px solid #000; padding: 5px; text-align: center; vertical-align: middle;">NO</th>';
             $html .= '<th rowspan="2" style="width: 30%; border: 1px solid #000; padding: 5px; text-align: center; vertical-align: middle;">KEGIATAN TUGAS JABATAN</th>';
             $html .= '<th colspan="3" style="border: 1px solid #000; padding: 5px; text-align: center;">TARGET</th>';
             $html .= '<th colspan="3" style="border: 1px solid #000; padding: 5px; text-align: center;">REALISASI</th>';
             $html .= '<th rowspan="2" style="width: 10%; border: 1px solid #000; padding: 5px; text-align: center; vertical-align: middle;">NILAI CAPAIAN KINERJA</th>';
             $html .= '</tr>';
-            $html .= '<tr style="background-color: #d9ead3;">';
+            $html .= '<tr>';
             $html .= '<th style="border: 1px solid #000; padding: 5px; text-align: center;">KUANT/OUTPUT</th>';
             $html .= '<th style="border: 1px solid #000; padding: 5px; text-align: center;">SATUAN</th>';
             $html .= '<th style="border: 1px solid #000; padding: 5px; text-align: center;">KUAL/MUTU</th>';
@@ -441,7 +441,7 @@ class HalamanLaporan extends MY_Controller
             }
 
             // Summary row untuk section ini
-            $html .= '<tr style="background-color: #fff2cc; font-weight: bold;">';
+            $html .= '<tr style="font-weight: bold;">';
             $html .= '<td colspan="8" style="border: 1px solid #000; padding: 5px; text-align: center;">NILAI CAPAIAN KINERJA</td>';
             $html .= '<td style="border: 1px solid #000; padding: 5px; text-align: center;">' . number_format($pck->capaian, 2, ',', '.') . '</td>';
             $html .= '</tr>';
@@ -453,13 +453,13 @@ class HalamanLaporan extends MY_Controller
 
         // Rekapitulasi
         $html .= '<div class="pck-rekap" style="margin-top: 30px;">';
-        $html .= '<h5 style="font-size: 12px; font-weight: bold; margin-bottom: 10px; background-color: #f4cccc; padding: 8px; border: 1px solid #000;">';
+        $html .= '<h5 style="font-size: 12px; font-weight: bold; margin-bottom: 10px; padding: 8px; border: 1px solid #000;">';
         $html .= 'REKAPITULASI PENILAIAN CAPAIAN KINERJA BULAN ' . strtoupper($nama_bulan) . ' ' . $data_penilaian['tahun'];
         $html .= '</h5>';
 
         $html .= '<table class="pck-table" style="width: 100%; border-collapse: collapse; font-size: 10px;">';
         $html .= '<thead>';
-        $html .= '<tr style="background-color: #d9ead3;">';
+        $html .= '<tr>';
         $html .= '<th style="width: 5%; border: 1px solid #000; padding: 5px; text-align: center;">NO</th>';
         $html .= '<th style="width: 60%; border: 1px solid #000; padding: 5px; text-align: center;">INDIKATOR KINERJA</th>';
         $html .= '<th style="width: 20%; border: 1px solid #000; padding: 5px; text-align: center;">NILAI CAPAIAN KINERJA</th>';
@@ -495,9 +495,9 @@ class HalamanLaporan extends MY_Controller
             $keterangan = '(Kurang)';
         }
 
-        $html .= '<tr style="background-color: #fff2cc; font-weight: bold;">';
+        $html .= '<tr style="font-weight: bold;">';
         $html .= '<td colspan="2" style="border: 1px solid #000; padding: 5px; text-align: center;">HASIL CAPAIAN KINERJA BULAN ' . strtoupper($nama_bulan) . '</td>';
-        $html .= '<td style="border: 1px solid #000; padding: 5px; text-align: center;">' . number_format($avg_total, 2, ',', '.') . ' ' . $keterangan . '</td>';
+        $html .= '<td style="text-center">' . number_format($avg_total, 2, ',', '.') . ' ' . $keterangan . '</td>';
         $html .= '</tr>';
 
         $html .= '</tbody>';

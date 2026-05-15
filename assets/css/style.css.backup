@@ -97,17 +97,16 @@ Project:	Brunette
 /****************************/
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons|Roboto:300i,400,400i,500,700);
 @import url(../../assets/plugins/bootstrap/dist/css/bootstrap.min.css);
-@import url(material-design-iconic-font.min.css);
-@import url(dripicons.css);
-/*
 @import url(font-awesome.min.css);
 @import url(ionicons.min.css);
+@import url(dripicons.css);
 @import url(glyphicons.css);
 @import url(themify-icons.css);
 @import url(animate.css);
 @import url(simple-line-icons.css);
 @import url(linea-icon.css);
 @import url(pe-icon-7-stroke.css);
+@import url(material-design-iconic-font.min.css);
 @import url(../../assets/plugins/owl.carousel/dist/assets/owl.carousel.min.css);
 @import url(../../assets/plugins/owl.carousel/dist/assets/owl.theme.default.min.css);
 /*__________________________________________________________________;
@@ -13578,6 +13577,7 @@ button.close {
   position: relative; }
 
 .hk-pg-wrapper {
+  background: #fff;
   padding: 57px 0 60px;
   position: relative; }
   .hk-pg-wrapper .hk-pg-header {

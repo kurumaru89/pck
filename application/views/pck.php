@@ -1,13 +1,14 @@
+<!-- Title -->
 <div class="hk-pg-header">
     <div>
         <h2 class="hk-pg-title font-weight-600 mb-10">Periode Penilaian Capaian Kinerja</h2>
         <p>Daftar Periode Penilaian Capaian Kinerja Pegawai<i class="ion ion-md-help-circle-outline ml-5"
                 data-toggle="tooltip" data-placement="top" title=""
-                data-original-title="Need help about earning stats"></i></p>
+                data-original-title="Kelola periode penilaian"></i></p>
     </div>
     <?php if (!$this->session->userdata('ketua')) { ?>
         <div class="d-flex">
-            <button type="button" class="btn btn-with-icon btn-gradient-primary btn-lg"
+            <button type="button" class="btn btn-with-icon btn-primary btn-lg"
                 onclick="formPeriodePK('<?= base64_encode($this->encryption->encrypt('-1')) ?>')"><i
                     class="dropdown-icon zmdi zmdi-plus"></i><span> Tambah
                     Periode</span></button>
@@ -18,20 +19,24 @@
 <div class="row">
     <div class="col-xl-12">
         <!-- Page Alerts -->
-        <div class="alert alert-primary alert-wth-icon alert-dismissible fade show" role="alert">
-            <span class="alert-icon-wrap"><i class="zmdi zmdi-help"></i></span> You're profile is waiting to be
-            activated. Once done, you can request meetings with them.
+        <div class="alert alert-primary alert-wth-icon fade show" role="alert">
+            <span class="alert-icon-wrap"><i class="zmdi zmdi-info"></i></span> Kelola periode penilaian capaian kinerja pegawai di halaman ini.
         </div>
         <!-- /Page Alerts -->
 
         <div id="tabelPeriodePK">
-            <div class="page-wrapper">
-                <div class="page-content">
-                    <div class="text-center p-4">
-                        <div class="spinner-border text-primary" role="status"></div>
+            <!-- Skeleton loading -->
+            <div class="periode-pk-skeleton">
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header">
+                        <div class="skeleton skeleton-card-title"></div>
                     </div>
-                    <div class="text-center">
-                        <span>Memuat Data Periode... Harap Tunggu Sebentar</span>
+                    <div class="skeleton-table-section">
+                        <div class="skeleton skeleton-table-head"></div>
+                        <div class="skeleton skeleton-table-row"></div>
+                        <div class="skeleton skeleton-table-row"></div>
+                        <div class="skeleton skeleton-table-row"></div>
+                        <div class="skeleton skeleton-table-row"></div>
                     </div>
                 </div>
             </div>
@@ -41,8 +46,8 @@
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
-                    <div class="modal-header bg-gradient-dark">
-                        <h5 class="modal-title text-white" id="modalPeriodeJudul"></h5>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalPeriodeJudul"></h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -51,12 +56,12 @@
                         <div class="modal-body">
                             <input type="hidden" id="periode_id" name="periode_id">
                             <div class="form-group">
-                                <label>Nama Periode <span class="text-danger">*</span></label>
+                                <label class="form-label">Nama Periode <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="nama_periode" name="nama_periode" required
-                                    placeholder="Nama Periode">
+                                    placeholder="Nama Periode" autocomplete="off">
                             </div>
                             <div class="form-group">
-                                <label>Tahun <span class="text-danger">*</span></label>
+                                <label class="form-label">Tahun <span class="text-danger">*</span></label>
                                 <select name="tahun" id="tahun" class="form-control">
                                     <option value="">Pilih Tahun</option>
                                 </select>
@@ -64,7 +69,7 @@
                             <div class="row">
                                 <div class="col-lg-6 col-md-12">
                                     <div class="form-group">
-                                        <label>Periode Awal <span class="text-danger">*</span></label>
+                                        <label class="form-label">Periode Awal <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <input type="hidden" name="periode_awal" id="periode_awal_val">
                                             <input type="text" class="form-control" id="periode_awal"
@@ -78,7 +83,7 @@
                                 </div>
                                 <div class="col-lg-6 col-md-12">
                                     <div class="form-group">
-                                        <label>Periode Akhir <span class="text-danger">*</span></label>
+                                        <label class="form-label">Periode Akhir <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <input type="hidden" name="periode_akhir" id="periode_akhir_val">
                                             <input type="text" class="form-control" id="periode_akhir"

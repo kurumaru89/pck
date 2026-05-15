@@ -200,6 +200,21 @@ $(function () {
 });
 
 function notifikasi(pesan, result) {
+    // Use modern toast system from modern-ui.js
+    if (typeof ModernUI !== 'undefined') {
+        if (result == '1') {
+            ModernUI.toastSuccess(pesan);
+        } else if (result == '2') {
+            ModernUI.toastWarning(pesan);
+        } else if (result == '3') {
+            ModernUI.toastDanger(pesan);
+        } else {
+            ModernUI.toastInfo(pesan);
+        }
+        return false;
+    }
+    // Fallback to old toast if modern-ui not loaded
+    var heading, kelas;
     if (result == '1') {
         heading = 'Berhasil';
         kelas = 'jq-toast-success';
@@ -213,7 +228,6 @@ function notifikasi(pesan, result) {
         heading = 'Informasi';
         kelas = 'jq-toast-info';
     }
-
     $.toast().reset('all');
     $("body").removeAttr('class');
     $.toast({
@@ -239,35 +253,70 @@ function info(pesan) {
 }
 
 function loadPage(page, id) {
-    cekToken();
-    $('#app').html(`
-        <div class="page-wrapper">
-            <div class="page-content">
-                <div class="text-center p-4">
-                    <div class="spinner-border text-primary" role="status"></div>
-                </div>
-                <div class="text-center">
-                    <span>Memuat Halaman... Harap Tunggu Sebentar</span>
-                </div>
-            </div>
-        </div>
-    `);
-
-    var params = {};
-    if (id !== undefined && id !== null && id !== '') {
-        params.id = id;
+    // Guard: prevent double-load within 800ms
+    var now = Date.now();
+    if (window._lastLoadPage && (now - window._lastLoadPage) < 800) {
+        return;
     }
-    $.get("halamanutama/page/" + encodeURIComponent(page), params, function (data) {
-        $('#app').html(data);
-    }).fail(function () {
-        $('#app').html(`
-            <div class="page-wrapper">
-                <div class="page-content">
-                    <div class="text-center p-4">Halaman tidak ditemukan.</div>
+    window._lastLoadPage = now;
+
+    cekToken();
+    var $app = $('#app');
+
+    // Fade out current content
+    $app.css({ opacity: '0', transform: 'translateY(8px)', transition: 'opacity 200ms ease-in, transform 200ms ease-in' });
+
+    setTimeout(function () {
+        // Show skeleton loader
+        ModernUI.showSkeleton($app.get(0));
+        $app.css({ opacity: '1', transform: 'translateY(0)' });
+
+        var params = {};
+        if (id !== undefined && id !== null && id !== '') {
+            params.id = id;
+        }
+
+        $.get("halamanutama/page/" + encodeURIComponent(page), params, function (data) {
+            // Fade in new content
+            $app.css({ opacity: '0', transform: 'translateY(16px)', transition: 'opacity 0ms' });
+
+            $app.html(data);
+
+            // Animate in
+            requestAnimationFrame(function () {
+                $app.css({
+                    opacity: '1',
+                    transform: 'translateY(0)',
+                    transition: 'opacity 350ms ease-out, transform 350ms ease-out'
+                });
+                // Trigger content animations
+                ModernUI.animateContent($app.get(0));
+                ModernUI.setActiveNavLink(page);
+            });
+
+            // Scroll to top smoothly
+            $('html, body').animate({ scrollTop: 0 }, 300);
+
+        }).fail(function () {
+            $app.html(`
+            <div class="glass-card animate-fade-in-up">
+                <div class="glass-card-body text-center">
+                    <div style="font-size:48px;margin-bottom:16px;opacity:0.3">&#xE8E5;</div>
+                    <h4 style="color:var(--text-primary);margin-bottom:8px">Halaman tidak ditemukan</h4>
+                    <p style="color:var(--text-muted)">Silakan coba navigasi lain atau refresh halaman.</p>
+                    <button class="btn-glass-primary btn-glass-sm mt-3" onclick="loadPage('dashboard')">
+                        <i class="material-icons" style="font-size:14px">&#xE88A;</i> Kembali ke Beranda
+                    </button>
                 </div>
             </div>
-        `);
-    });
+            `);
+            $app.css({ opacity: '1', transform: 'translateY(0)' });
+        });
+
+    }, 200);
+
+    // Update active nav
+    ModernUI.setActiveNavLink(page);
 }
 
 function cekToken() {
@@ -406,9 +455,8 @@ function aktifPeran(id) {
     Swal.fire({
         title: "Yakin ingin mengaktifkan kembali peran pegawai?",
         text: "Data peran ini akan diaktifkan perannya.",
-        icon: "warning", // ⬅️ gunakan 'icon' bukan 'type'
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
         confirmButtonText: "Ya, aktifkan!",
         cancelButtonText: "Batal"
     }).then((result) => {
@@ -428,9 +476,8 @@ function blokPeran(id) {
     Swal.fire({
         title: "Yakin ingin menonaktifkan peran pegawai?",
         text: "Data peran ini akan dinonaktifkan perannya.",
-        icon: "warning", // ⬅️ gunakan 'icon' bukan 'type'
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: "#DD6B55",
         confirmButtonText: "Ya, nonaktifkan!",
         cancelButtonText: "Batal"
     }).then((result) => {
@@ -492,17 +539,18 @@ function loadTabelPeriodePK() {
 
             if (json.ketua) {
                 data = `
-                <section class="hk-sec-wrapper">
-                    <div class="table-responsive">
-                    <table id="tabelPeriodePKData" class="table table-striped table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th width="5%">#</th>
-                                <th width="40%" style="text-align: center;">Tahun Periode</th>
-                                <th width="55%" style="text-align: center;">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                        <table id="tabelPeriodePKData" class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="no" width="5%">#</th>
+                                    <th width="40%" style="text-align: center;">Tahun Periode</th>
+                                    <th width="55%" style="text-align: center;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                 `;
 
                 json.data_periode.forEach((row, index) => {
@@ -518,7 +566,7 @@ function loadTabelPeriodePK() {
                     // Baris tabel
                     data += `
                         <tr>
-                            <td>${index + 1}</td>
+                            <td class="no">${index + 1}</td>
                             <td style="text-align: center;">
                                 <h3>
                                     <span class="badge badge-primary">${row.tahun}</span>
@@ -535,26 +583,28 @@ function loadTabelPeriodePK() {
                 });
 
                 data += `
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                        </div>
                     </div>
                 </div>
                 `;
             } else {
                 // Kalau ada data, buat tabelnya
                 data = `
-                <section class="hk-sec-wrapper">
-                    <div class="table-responsive">
-                    <table id="tabelPeriodePKData" class="table table-striped table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th width="5%">No</th>
-                                <th width="40%">Nama Periode</th>
-                                <th width="30%" style="text-align: center;">Tahun Periode</th>
-                                <th width="25%" style="text-align: center;">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                        <table id="tabelPeriodePKData" class="table table-striped table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="no" width="5%">#</th>
+                                    <th width="40%">Nama Periode</th>
+                                    <th width="30%" style="text-align: center;">Tahun Periode</th>
+                                    <th width="25%" style="text-align: center;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                 `;
 
                 json.data_periode.forEach((row, index) => {
@@ -606,8 +656,8 @@ function loadTabelPeriodePK() {
                     // Baris tabel
                     data += `
                         <tr>
-                            <td>${index + 1}</td>
-                            <td>
+                            <td class="no">${index + 1}</td>
+                            <td class="text-dark">
                                 <div class="mb-2">
                                     <span class="font-weight-bold" style="font-size: 1.1rem;">${row.nama_periode}</span>
                                     ${statusBadge}
@@ -652,8 +702,9 @@ function loadTabelPeriodePK() {
                 });
 
                 data += `
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                        </div>
                     </div>
                 </div>
                 `;
@@ -674,25 +725,25 @@ function loadTabelDetailPK(id) {
         try {
             const json = JSON.parse(response); // Pastikan server kirim JSON valid
 
-            $('#tabelDetailPK').html(''); // kosongkan wrapper
+            $('#tabelDetailPK').html(''); // kosongkan skeleton, ganti dengan data
 
             let tombolKepala = ``;
             if (json.status == 0) {
                 tombolKepala = `
-                    <button type="button" class="btn btn-sm btn-warning mr-2" onclick="pengajuanPK('${id}')" 
+                    <button type="button" class="btn btn-sm btn-warning mr-2" onclick="pengajuanPK('${id}')"
                         data-toggle="tooltip-primary" data-placement="top" data-original-title="Pengajuan Atasan">
-                        <i class="zmdi zmdi-upload"></i> 
+                        <i class="zmdi zmdi-upload"></i>
                     </button>
-                    <button type="button" class="btn btn-sm btn-primary mr-2" onclick="modalSasaran('-1', '${id}')" 
+                    <button type="button" class="btn btn-sm btn-primary mr-2" onclick="modalSasaran('-1', '${id}')"
                         data-toggle="tooltip" data-placement="top" data-original-title="Tambah Sasaran">
-                    <i class="zmdi zmdi-plus-circle"></i> 
+                    <i class="zmdi zmdi-plus-circle"></i>
                     </button>
                 `
             }
 
             if (!json.data_sasaran || json.data_sasaran.length === 0) {
                 tombolKepala += `
-                    <button type="button" class="btn btn-primary btn-sm" onclick="generatePeriodeBaru()" 
+                    <button type="button" class="btn btn-primary btn-sm" onclick="generatePeriodeBaru()"
                         data-toggle="tooltip" data-placement="top" data-original-title="Salin PK Sebelumnya">
                         <i class="zmdi zmdi-copy"></i>
                     </button>
@@ -731,12 +782,12 @@ function loadTabelDetailPK(id) {
             } else {
                 data += `
                 <div class="table-responsive">
-                    <table id="tabelDetailPKData" class="table table-striped table-bordered table-hover">
+                    <table id="tabelDetailPKData" class="table table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th width="5%">No</th>
-                                <th width="40%">Sasaran Kegiatan</th>
-                                <th width="55%">Indikator Kinerja</th>
+                                <th>#</th>
+                                <th>Sasaran Kegiatan</th>
+                                <th>Indikator Kinerja</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -754,7 +805,7 @@ function loadTabelDetailPK(id) {
                                     <i class="zmdi zmdi-edit"></i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-danger"
-                                    onclick="hapusSasaranKegiatan('${row_sasaran.id}')" 
+                                    onclick="hapusSasaranKegiatan('${row_sasaran.id}')"
                                     data-toggle="tooltip" data-placement="top" data-original-title="Hapus Sasaran">
                                     <i class="zmdi zmdi-delete"></i>
                                 </button>
@@ -815,25 +866,25 @@ function loadTabelDetailPK(id) {
                                         <strong>${row_indikator.nama_indikator}</strong>
                                         <div class="row">
                                             <div class="col-4">
-                                                <small class="text-muted">
+                                                <small>
                                                     <i class="zmdi zmdi-gps-dot"></i> Target Mutu : ${row_indikator.target_mutu}
                                                 </small>
                                             </div>
                                             <div class="col-4">
-                                                <small class="text-muted">
+                                                <small>
                                                     <i class="zmdi zmdi-arrows"></i> Target Kuantitas : ${row_indikator.target_kuantitas}
                                                 </small>
                                             </div>
                                             <div class="col-4">
-                                                <small class="text-muted">
+                                                <small>
                                                     <i class="zmdi zmdi-local-activity"></i> Satuan : ${row_indikator.satuan}
                                                 </small>
                                             </div>
                                         </div>
-                                        <small class="text-muted">
+                                        <small>
                                             Bulan : ${bulan_selected}
                                         </small><br>
-                                        <small class="text-muted">
+                                        <small>
                                             Pagu Anggaran : Rp${anggaran}
                                         </small><br>
                                         ${tombolIndikator}
@@ -855,12 +906,12 @@ function loadTabelDetailPK(id) {
                     // Baris tabel
                     data += `
                         <tr>
-                            <td width="5%">${index_sasaran + 1}</td>
-                            <td width="40%">
+                            <td>${index_sasaran + 1}</td>
+                            <td class="indikator">
                                 ${row_sasaran.nama_sasaran}<br>
                                 ${tombolSasaran}
                             </td>
-                            <td width="55%">
+                            <td>
                                 <ul class="list-ul">
                                     ${dataIndikator}
                                 </ul>
@@ -1040,7 +1091,7 @@ function loadTabelDetailPCK(id) {
                                     <td class="text-center align-middle">
                                         ${idx + 1}
                                     </td>
-                                    <td>
+                                    <td class="indikator">
                                         ${row_uraian_tugas.uraian_tugas || ''}
                                         <span class="badge badge-pill badge-primary">${tautan}</span>
                                         ${tombolUraianTugas ? `<div class="mt-2">${tombolUraianTugas}</div>` : ``}
@@ -1136,13 +1187,10 @@ function pilihIndikator(indikator_id, penilaian_id) {
 
 function hapusPeriodePK(id) {
     Swal.fire({
-        title: "<h5>HAPUS PERIODE PERJANJIAN KINERJA</h5>",
-        html: "<h5>Apa Anda Yakin Akan Menghapus Perjanjian Kinerja Periode Ini?</h5><code>Periode kerja yang dihapus tidak bisa dikembalikan</code>",
+        title: "HAPUS PERIODE PERJANJIAN KINERJA",
+        html: "Apa Anda Yakin Akan Menghapus Perjanjian Kinerja Periode Ini? Periode kerja yang dihapus tidak bisa dikembalikan",
         icon: "warning",
-        background: '#00000',
         showCancelButton: true,
-        confirmButtonColor: "#DD2A2A",
-        cancelButtonColor: "#6c757d",
         confirmButtonText: "Ya, Hapus !",
         cancelButtonText: "Tidak !"
     }).then((result) => {
@@ -1164,13 +1212,10 @@ function hapusPeriodePK(id) {
 
 function hapusSasaranKegiatan(id) {
     Swal.fire({
-        title: "<h5>HAPUS SASARAN KEGIATAN</h5>",
-        html: "<h5>Apa Anda Yakin Akan Menghapus Sasaran Kegiatan Ini?</h5><code>Sasaran kegiatan yang dihapus tidak bisa dikembalikan</code>",
+        title: "HAPUS SASARAN KEGIATAN",
+        html: "Apa Anda Yakin Akan Menghapus Sasaran Kegiatan Ini? Sasaran kegiatan yang dihapus tidak bisa dikembalikan",
         icon: "warning",
-        background: '#00000',
         showCancelButton: true,
-        confirmButtonColor: "#DD2A2A",
-        cancelButtonColor: "#6c757d",
         confirmButtonText: "Ya, Hapus !",
         cancelButtonText: "Tidak !"
     }).then((result) => {
@@ -1192,13 +1237,10 @@ function hapusSasaranKegiatan(id) {
 
 function hapusIndikatorKinerja(id) {
     Swal.fire({
-        title: "<h5>HAPUS INDIKATOR KINERJA</h5>",
-        html: "<h5>Apa Anda Yakin Akan Menghapus Indikator Kinerja Ini?</h5><code>Indikator kinerja yang dihapus tidak bisa dikembalikan</code>",
+        title: "HAPUS INDIKATOR KINERJA",
+        html: "Apa Anda Yakin Akan Menghapus Indikator Kinerja Ini? Indikator kinerja yang dihapus tidak bisa dikembalikan",
         icon: "warning",
-        background: '#00000',
         showCancelButton: true,
-        confirmButtonColor: "#DD2A2A",
-        cancelButtonColor: "#6c757d",
         confirmButtonText: "Ya, Hapus !",
         cancelButtonText: "Tidak !"
     }).then((result) => {
@@ -1220,13 +1262,10 @@ function hapusIndikatorKinerja(id) {
 
 function hapusCapaianIndikator(id) {
     Swal.fire({
-        title: "<h5>HAPUS INDIKATOR KINERJA</h5>",
-        html: "<h5>Apa Anda Yakin Akan Menghapus Indikator Kinerja Ini?</h5>",
+        title: "HAPUS INDIKATOR KINERJA",
+        html: "Apa Anda Yakin Akan Menghapus Indikator Kinerja Ini?",
         icon: "warning",
-        background: '#00000',
         showCancelButton: true,
-        confirmButtonColor: "#DD2A2A",
-        cancelButtonColor: "#6c757d",
         confirmButtonText: "Ya, Hapus !",
         cancelButtonText: "Tidak !"
     }).then((result) => {
@@ -1248,13 +1287,10 @@ function hapusCapaianIndikator(id) {
 
 function hapusUraianTugas(penilaian_id, id) {
     Swal.fire({
-        title: "<h5>HAPUS INDIKATOR KINERJA</h5>",
-        html: "<h5>Apa Anda Yakin Akan Menghapus Indikator Kinerja Ini?</h5>",
+        title: "HAPUS INDIKATOR KINERJA",
+        html: "Apa Anda Yakin Akan Menghapus Indikator Kinerja Ini?",
         icon: "warning",
-        background: '#00000',
         showCancelButton: true,
-        confirmButtonColor: "#DD2A2A",
-        cancelButtonColor: "#6c757d",
         confirmButtonText: "Ya, Hapus !",
         cancelButtonText: "Tidak !"
     }).then((result) => {
@@ -1276,13 +1312,10 @@ function hapusUraianTugas(penilaian_id, id) {
 
 function hapusPenilaian(penilaian_id, uraian_id) {
     Swal.fire({
-        title: "<h5>HAPUS PENILAIAN URAIAN TUGAS INI</h5>",
-        html: "<h5>Apa Anda Yakin Akan Menghapus Penilaian Uraian Tugas Ini?</h5>",
+        title: "HAPUS PENILAIAN URAIAN TUGAS INI",
+        html: "Apa Anda Yakin Akan Menghapus Penilaian Uraian Tugas Ini?",
         icon: "warning",
-        background: '#00000',
         showCancelButton: true,
-        confirmButtonColor: "#DD2A2A",
-        cancelButtonColor: "#6c757d",
         confirmButtonText: "Ya, Hapus !",
         cancelButtonText: "Tidak !"
     }).then((result) => {
@@ -1321,8 +1354,6 @@ function ambilSasaranJabatan(id) {
         text: 'Sasaran Kegiatan tahun ini sudah dibuat oleh pejabat sebelumnya. Apakah Anda ingin mengambil Sasaran Kegiatan tersebut?',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#7a5449',
-        cancelButtonColor: '#d33',
         confirmButtonText: 'Ya, Ambil Sasaran Kegiatan',
         cancelButtonText: 'Tidak'
     }).then((result) => {
@@ -1745,21 +1776,8 @@ function formatRupiah(angka) {
 }
 
 function loadDetailPKStaf(id) {
-
-    $('#tabelDetailPKStaf').html(''); // kosongkan wrapper
-    let dataLoader = `
-        <div class="page-wrapper">
-            <div class="page-content">
-                <div class="text-center p-4">
-                    <div class="spinner-border text-primary" role="status"></div>
-                </div>
-                <div class="text-center">
-                    <span>Memuat Data Detail Perjanjian Kinerja Pegawai ... Harap Tunggu Sebentar</span>
-                </div>
-            </div>
-        </div>
-    `;
-    $('#tabelDetailPKStaf').html(dataLoader);
+    // Skeleton sudah ada di dalam #tabelDetailPKStaf — tampil saat AJAX loading
+    // .html('') di response handler akan menggantinya dengan data
 
     $.post('show_tabel_detail_pk', { id: id }, function (response) {
         try {
@@ -1846,25 +1864,25 @@ function loadDetailPKStaf(id) {
                             <strong>${row_indikator.nama_indikator}</strong>
                             <div class="row">
                                 <div class="col-4">
-                                    <small class="text-muted">
+                                    <small>
                                         <i class="zmdi zmdi-gps-dot"></i> Target Mutu : ${row_indikator.target_mutu}
                                     </small>
                                 </div>
                                 <div class="col-4">
-                                    <small class="text-muted">
+                                    <small>
                                         <i class="zmdi zmdi-arrows"></i> Target Kuantitas : ${row_indikator.target_kuantitas}
                                     </small>
                                 </div>
                                 <div class="col-4">
-                                    <small class="text-muted">
+                                    <small>
                                         <i class="zmdi zmdi-local-activity"></i> Satuan : ${row_indikator.satuan}
                                     </small>
                                 </div>
                             </div>
-                            <small class="text-muted">
+                            <small>
                                 Bulan : ${bulan_selected}
                             </small><br>
-                            <small class="text-muted">
+                            <small>
                                 Pagu Anggaran : Rp${anggaran}
                             </small>
                         </li>
@@ -1876,7 +1894,7 @@ function loadDetailPKStaf(id) {
                 data += `
                     <tr>
                         <td width="5%">${index_sasaran + 1}</td>
-                        <td width="40%">
+                        <td class="indikator" width="40%">
                             ${row_sasaran.nama_sasaran}
                         </td>
                         <td width="55%">
@@ -1909,21 +1927,8 @@ function loadDetailPKStaf(id) {
 }
 
 function loadDetailPCKStaf(id) {
-
-    $('#tabelDetailPCKStaf').html(''); // kosongkan wrapper
-    let dataLoader = `
-        <div class="page-wrapper">
-            <div class="page-content">
-                <div class="text-center p-4">
-                    <div class="spinner-border text-primary" role="status"></div>
-                </div>
-                <div class="text-center">
-                    <span>Memuat Data Detail Perjanjian Kinerja Pegawai ... Harap Tunggu Sebentar</span>
-                </div>
-            </div>
-        </div>
-    `;
-    $('#tabelDetailPCKStaf').html(dataLoader);
+    // Skeleton sudah ada di dalam #tabelDetailPCKStaf — tampil saat AJAX loading
+    // .html('') di response handler akan menggantinya dengan data
 
     $.post('show_tabel_detail_pck', { id: id }, function (response) {
         try {
@@ -2053,7 +2058,7 @@ function loadDetailPCKStaf(id) {
                                     <td class="text-center align-middle">
                                         ${idx + 1}
                                     </td>
-                                    <td>
+                                    <td class="indikator">
                                         ${row_uraian_tugas.uraian_tugas || ''}<br>
                                         <span class="badge badge-pill badge-primary">${tautan}</span>
                                     </td>
@@ -2132,8 +2137,6 @@ function persetujuanPK(id) {
         showCancelButton: true,
         confirmButtonText: 'Simpan',
         cancelButtonText: 'Batal',
-        confirmButtonColor: '#7a5449',
-        cancelButtonColor: '#6c757d',
         reverseButtons: true,
         didOpen: () => {
             // Buat select lebih cantik (Select2 + badge)
@@ -2288,13 +2291,10 @@ function persetujuanPK(id) {
 
 function batalPersetujuanPK(id) {
     Swal.fire({
-        title: "<h5>BATALKAN VALIDASI PERJANJIAN KINERJA</h5>",
-        html: "<h5>Apa Anda Yakin Akan Membatalkan Persetujuan Perjanjian Kinerja Ini?</h5>",
+        title: "BATALKAN VALIDASI PERJANJIAN KINERJA",
+        html: "Apa Anda Yakin Akan Membatalkan Persetujuan Perjanjian Kinerja Ini?",
         icon: "warning",
-        background: '#00000',
         showCancelButton: true,
-        confirmButtonColor: "#DD2A2A",
-        cancelButtonColor: "#6c757d",
         confirmButtonText: "Ya, Batalkan !",
         cancelButtonText: "Tidak !"
     }).then((result) => {
@@ -2365,7 +2365,8 @@ function lanjutkanPreviewPK() {
 
     $('#modalLokasiTanggal').modal('hide');
     $('#modalPreviewPK').modal('show');
-    $('#previewPK').html('');
+    // Skeleton sudah ada di dalam #previewPK, biarkan tampil saat AJAX loading
+    // Tidak perlu .html('') di sini agar skeleton tetap terlihat
 
     // Load data PK dengan lokasi dan tanggal
     $.ajax({
@@ -2556,7 +2557,12 @@ function initMonitoringPenilaian() {
         columnDefs: [
             { targets: [0, 7], orderable: false },
             { targets: [4, 7], searchable: false }
-        ]
+        ],
+        initComplete: function () {
+            // Hide skeleton & show table
+            $('#monitoring-table-wrap .monitoring-table-skeleton').addClass('hidden');
+            $('#tabelMonitoringPenilaian').show();
+        }
     });
 
     $nama.on('change', function () { table.ajax.reload(null, true); });
@@ -2588,7 +2594,7 @@ function previewPCK(penilaianId, status) {
     }
 
     $('#modal-preview-pck').modal('show');
-    $('#preview-pck-content').html('<div class="text-center py-5"><i class="fas fa-spinner fa-spin fa-2x"></i><p class="mt-2">Memuat data...</p></div>');
+    // Skeleton sudah ada di dalam #preview-pck-content — tampil saat AJAX loading
 
     $.ajax({
         url: 'get_data_pck',

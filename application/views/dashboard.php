@@ -1,10 +1,9 @@
 <!-- Title -->
 <div class="hk-pg-header">
     <div>
-        <h2 class="hk-pg-title font-weight-600 mb-10">Beranda</h2>
+        <h2 class="hk-pg-title font-weight-600">Beranda</h2>
         <p>Elektronik Penilaian Capaian Kinerja<i
-                class="ion ion-md-help-circle-outline ml-5" data-toggle="tooltip" data-placement="top"
-                title="Need help about earning stats"></i></p>
+                class="ion ion-md-help-circle-outline ml-5" data-toggle="tooltip" data-placement="                title="Selamat datang di aplikasi penilaian capaian kinerja"></i></p>
     </div>
 </div>
 <!-- /Title -->
@@ -13,21 +12,18 @@
 <div class="row">
     <div class="col-xl-12">
         <!-- Page Alerts -->
-        <div class="alert alert-primary alert-wth-icon alert-dismissible fade show" role="alert">
-            <span class="alert-icon-wrap"><i class="zmdi zmdi-help"></i></span> Selamat Datang di Aplikasi Penilaian
+        <div class="alert alert-primary alert-wth-icon fade show" role="alert">
+            <span class="alert-icon-wrap"><i class="zmdi zmdi-home"></i></span> Selamat Datang di Aplikasi Penilaian
             Capaian Kinerja Pegawai MS Banda Aceh
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">×</span>
-            </button>
         </div>
         <!-- /Page Alerts -->
     </div>
 </div>
 <!-- /Row -->
 
-<div class="row">
-    <div class="col-xl-7">
-        <div class="card">
+<div class="row mb-2">
+    <div class="col-xl-7 mb-2">
+        <div class="card mb-0">
             <div class="card-header">
                 <h5 class="mb-0">Capaian Kinerja Bulan Ini</h5>
                 <small class="text-muted">Perbandingan akan muncul jika bulan sebelumnya tersedia.</small>
@@ -61,7 +57,7 @@
     </div>
 
     <div class="col-xl-5">
-        <div class="card">
+        <div class="card mb-0">
             <div class="card-header">
                 <h5 class="mb-0">Grafik Capaian Kinerja Bulanan</h5>
                 <small class="text-muted">Rata-rata nilai Posted per bulan (tahun berjalan).</small>
@@ -73,9 +69,9 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-xl-6">
-        <div class="card">
+<div class="row mb-2">
+    <div class="col-xl-6 mb-2">
+        <div class="card mb-0">
             <div class="card-header">
                 <h5 class="mb-0">Posted vs Draft per Bulan</h5>
                 <small class="text-muted">Jumlah penilaian per bulan (tahun berjalan).</small>
@@ -86,7 +82,7 @@
         </div>
     </div>
     <div class="col-xl-6">
-        <div class="card">
+        <div class="card mb-0">
             <div class="card-header">
                 <h5 class="mb-0">Distribusi Nilai (Bulan Ini)</h5>
                 <small class="text-muted">Berdasarkan penilaian berstatus Posted.</small>
@@ -98,9 +94,9 @@
     </div>
 </div>
 
-<div class="row">
+<div class="row mb-2">
     <div class="col-xl-12">
-        <div class="card">
+        <div class="card mb-0">
             <div class="card-header">
                 <h5 class="mb-0">Top 10 Nilai Tertinggi (Bulan Ini)</h5>
                 <small class="text-muted">Hanya dari penilaian Posted.</small>
@@ -297,6 +293,16 @@
 
 <!-- Modal Preview PCK (untuk tombol Preview di dashboard) -->
 <div class="modal fade" id="modal-preview-pck" tabindex="-1" role="dialog" aria-labelledby="modalPreviewPCKLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document" style="max-width: 95%;">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-dark">
+ class="modal fade" id="modal-preview-pck" tabindex="-1" role="dialog" aria-labelledby="modalPreviewPCKLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document" style="max-width: 95%;">
+        <div class="modal-content">
+            <div class="modal-header bg-info">
+ss="modal fade" id="modal-preview-pck" tabindex="-1" role="dialog" aria-labelledby="modalPreviewPCKLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document" style="max-width: 95%;">
         <div class="modal-content">

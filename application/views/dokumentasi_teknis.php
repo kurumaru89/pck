@@ -6,7 +6,7 @@
 </div>
 
 <nav class="hk-breadcrumb" aria-label="breadcrumb">
-    <ol class="breadcrumb breadcrumb-light bg-transparent">
+    <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="javascript:;" data-page="dashboard">Beranda</a></li>
         <li class="breadcrumb-item active" aria-current="page">Dokumentasi Teknis</li>
     </ol>

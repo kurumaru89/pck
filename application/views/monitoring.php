@@ -8,7 +8,7 @@
 </div>
 
 <nav class="hk-breadcrumb" aria-label="breadcrumb">
-    <ol class="breadcrumb breadcrumb-light bg-transparent">
+    <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="javascript:;" data-page="dashboard">Beranda</a></li>
         <li class="breadcrumb-item active" aria-current="page">Monitoring Penilaian</li>
     </ol>
@@ -18,26 +18,26 @@
     <div class="col">
         <div class="card">
             <div class="card-body">
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-md-5">
-                        <div class="form-group">
-                            <label>Nama</label>
+                        <div class="form-group mb-md-0">
+                            <label class="form-label">Nama</label>
                             <select id="filterNama" class="form-control select2" style="width:100%">
                                 <option value="">Semua</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Tahun</label>
+                        <div class="form-group mb-md-0">
+                            <label class="form-label">Tahun</label>
                             <select id="filterTahun" class="form-control select2" style="width:100%">
                                 <option value="">Semua</option>
                             </select>
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Bulan</label>
+                        <div class="form-group mb-md-0">
+                            <label class="form-label">Bulan</label>
                             <select id="filterBulan" class="form-control select2" style="width:100%">
                                 <option value="">Semua</option>
                             </select>
@@ -45,8 +45,19 @@
                     </div>
                 </div>
 
-                <div class="table-responsive">
-                    <table id="tabelMonitoringPenilaian" class="table table-striped table-bordered table-hover w-100">
+                <div class="table-responsive" id="monitoring-table-wrap">
+                    <div class="monitoring-table-skeleton">
+                        <div class="skeleton skeleton-filter-bar"></div>
+                        <div class="skeleton skeleton-table-head"></div>
+                        <div class="skeleton skeleton-table-row"></div>
+                        <div class="skeleton skeleton-table-row"></div>
+                        <div class="skeleton skeleton-table-row"></div>
+                        <div class="skeleton skeleton-table-row"></div>
+                        <div class="skeleton skeleton-table-row"></div>
+                        <div class="skeleton skeleton-table-row"></div>
+                        <div class="skeleton skeleton-table-row"></div>
+                    </div>
+                    <table id="tabelMonitoringPenilaian" class="table table-striped table-bordered table-hover w-100" style="display:none;">
                         <thead>
                             <tr>
                                 <th style="width:5%">No</th>
@@ -72,7 +83,7 @@
     aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document" style="max-width: 95%;">
         <div class="modal-content">
-            <div class="modal-header bg-info">
+            <div class="modal-header bg-gradient-dark">
                 <h4 class="modal-title text-white" id="modalPreviewPCKLabel">
                     <i class="fas fa-file-alt"></i> Preview Penilaian Capaian Kinerja (PCK)
                 </h4>
@@ -81,9 +92,42 @@
                 </button>
             </div>
             <div class="modal-body" id="preview-pck-content" style="max-height: 80vh; overflow-y: auto;">
-                <div class="text-center py-5">
-                    <i class="fas fa-spinner fa-spin fa-2x"></i>
-                    <p class="mt-2">Memuat data...</p>
+                <!-- Skeleton loading -->
+                <div class="pck-skeleton">
+                    <div class="skeleton-header-pk">
+                        <div class="skeleton-logo"></div>
+                        <div class="skeleton-title-block">
+                            <div class="skeleton skeleton-title"></div>
+                            <div class="skeleton skeleton-subtitle"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-divider"></div>
+                    <div class="skeleton-info-row">
+                        <div class="skeleton-info-item">
+                            <div class="skeleton skeleton-label"></div>
+                            <div class="skeleton skeleton-value"></div>
+                        </div>
+                        <div class="skeleton-info-item">
+                            <div class="skeleton skeleton-label"></div>
+                            <div class="skeleton skeleton-value"></div>
+                        </div>
+                        <div class="skeleton-info-item">
+                            <div class="skeleton skeleton-label"></div>
+                            <div class="skeleton skeleton-value"></div>
+                        </div>
+                    </div>
+                    <div class="skeleton-table-wrap">
+                        <div class="skeleton skeleton-table-header"></div>
+                        <div class="skeleton skeleton-row-pk"></div>
+                        <div class="skeleton skeleton-row-pk"></div>
+                        <div class="skeleton skeleton-row-pk"></div>
+                        <div class="skeleton skeleton-row-pk"></div>
+                        <div class="skeleton skeleton-row-pk"></div>
+                    </div>
+                    <div class="skeleton-footer-pk">
+                        <div class="skeleton skeleton-footer-row"></div>
+                        <div class="skeleton skeleton-footer-row"></div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">

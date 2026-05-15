@@ -1,5 +1,14 @@
+<div class="hk-pg-header">
+    <div>
+        <h2 class="hk-pg-title font-weight-600 mb-10">Detail Perjanjian Kinerja</h2>
+        <p>Detail Periode Perjanjian Kinerja Pegawai<i class="ion ion-md-help-circle-outline ml-5"
+                data-toggle="tooltip" data-placement="top" title="" data-original-title="Kelola periode penilaian"></i>
+        </p>
+    </div>
+</div>
+
 <nav class="hk-breadcrumb" aria-label="breadcrumb">
-    <ol class="breadcrumb breadcrumb-light bg-transparent">
+    <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="javascript:;" data-page="pck">Periode Perjanjian Kinerja</a></li>
         <li class="breadcrumb-item active" aria-current="page">Detail Perjanjian Kinerja</li>
     </ol>
@@ -18,18 +27,18 @@
                                 <i class="zmdi zmdi-file-text"></i> Cetak Perjanjian Kinerja
                             </button>
                         <?php endif; ?>
-                        <a href="javascript:;" data-page="pck" class="btn btn-sm btn-secondary text-white">
+                        <a href="javascript:;" data-page="pck" class="btn btn-sm btn-secondary">
                             <i class="zmdi zmdi-arrow-left"></i> Kembali
                         </a>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6 mb-3 mb-md-0">
+                        <div class="col-md-6 mb-0">
                             <table class="table table-sm table-borderless mb-0">
                                 <tr>
                                     <th class="pl-0 text-muted" width="40%">Nama Periode</th>
-                                    <td><span class="font-weight-bold text-dark">
+                                    <td><span class="font-weight-bold">
                                             <?= htmlspecialchars($periode->nama_periode); ?>
                                         </span>
                                     </td>
@@ -42,7 +51,7 @@
                                 </tr>
                                 <tr>
                                     <th class="pl-0 text-muted">Periode</th>
-                                    <td>
+                                    <td class="Indikator">
                                         <?= !empty($periode->periode_awal) ? date('d-m-Y', strtotime($periode->periode_awal)) : '<em class="text-muted">-</em>'; ?>
                                         <span class="mx-1">s/d</span>
                                         <?= !empty($periode->periode_akhir) ? date('d-m-Y', strtotime($periode->periode_akhir)) : '<em class="text-muted">-</em>'; ?>
@@ -53,7 +62,7 @@
                         <div class="col-md-6">
                             <table class="table table-sm table-borderless mb-0">
                                 <tr>
-                                    <th class="pl-0 text-muted">Dibuat</th>
+                                    <th class="pl-0 text-muted" width="40%">Dibuat</th>
                                     <td>
                                         <i class="far fa-clock mr-1 text-primary"></i>
                                         <?= date('d M Y H:i', strtotime($periode->created_on)); ?>
@@ -100,14 +109,22 @@
         <!-- /Page Alerts -->
 
         <div id="tabelDetailPK">
-            <div class="page-wrapper">
-                <div class="page-content">
-                    <div class="text-center p-4">
-                        <div class="spinner-border text-primary" role="status"></div>
+            <!-- Skeleton loading -->
+            <div class="tabel-detail-pk-skeleton">
+                <div class="skeleton-card-header">
+                    <div class="skeleton skeleton-card-title"></div>
+                    <div class="skeleton-btn-group">
+                        <div class="skeleton skeleton-btn"></div>
+                        <div class="skeleton skeleton-btn"></div>
                     </div>
-                    <div class="text-center">
-                        <span>Memuat Data Detail Perjanjian Kinerja... Harap Tunggu Sebentar</span>
-                    </div>
+                </div>
+                <div class="skeleton-table-section">
+                    <div class="skeleton skeleton-table-head"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                    <div class="skeleton skeleton-table-row"></div>
+                    <div class="skeleton skeleton-table-row"></div>
                 </div>
             </div>
         </div>
@@ -128,7 +145,7 @@
                             <input type="hidden" id="periode_id" name="periode_id">
                             <input type="hidden" id="sasaran_id" name="sasaran_id">
                             <div class="form-group">
-                                <label for="nama_rhk">Sasaran Kegiatan :</label>
+                                <label class="form-label" for="nama_rhk">Sasaran Kegiatan :</label>
                                 <textarea class="form-control" id="nama_sasaran" name="nama_sasaran" rows="3"
                                     placeholder="Deskripsi Sasaran Kegiatan" required></textarea>
                             </div>
@@ -159,22 +176,22 @@
                             <input type="hidden" id="sasaran_id_indikator" name="sasaran_id">
                             <input type="hidden" id="indikator_id" name="indikator_id">
                             <div class="form-group">
-                                <label for="nama_rhk">Indikator Kinerja :</label>
+                                <label class="form-label" for="nama_rhk">Indikator Kinerja :</label>
                                 <textarea class="form-control" id="nama_indikator" name="nama_indikator" rows="3"
                                     placeholder="Deskripsi Indikator Kinerja Individu" required></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="target_mutu">Target Kuantitas :</label>
+                                <label class="form-label" for="target_mutu">Target Kuantitas :</label>
                                 <input type="number" class="form-control" id="target_kuantitas" name="target_kuantitas"
                                     placeholder="Diisi Dengan Jumlah Target (Contoh : 10))" required>
                             </div>
                             <div class="form-group">
-                                <label for="target_mutu">Satuan :</label>
+                                <label class="form-label" for="target_mutu">Satuan :</label>
                                 <input type="text" class="form-control" id="satuan" name="satuan"
                                     placeholder="Diisi Dengan Satuan Target (Contoh : Laporan)" required>
                             </div>
                             <div class="form-group">
-                                <label>Waktu Penyelesaian :</label>
+                                <label class="form-label">Waktu Penyelesaian :</label>
                                 <div class="mb-2">
                                     <button type="button" class="btn btn-sm btn-info" onclick="pilihSemuaBulan()">
                                         <i class="zmdi zmdi-check-square"></i> Pilih Semua
@@ -217,7 +234,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="target_mutu">Pagu Anggaran :</label>
+                                <label class="form-label" for="target_mutu">Pagu Anggaran :</label>
                                 <input type="text" class="form-control" id="anggaran" name="anggaran"
                                     placeholder="Diisi Dengan Jumlah Pagu Anggaran dalam Rupiah (Contoh : 10))">
                             </div>
@@ -248,13 +265,13 @@
                         <form id="formLokasiTanggal">
                             <input type="hidden" id="periode_id_pk" name="periode_id">
                             <div class="form-group">
-                                <label for="lokasi_pk">Lokasi <span class="text-danger">*</span></label>
+                                <label class="form-label" for="lokasi_pk">Lokasi <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="lokasi_pk" name="lokasi"
                                     placeholder="Contoh: Jakarta" required>
                                 <small class="form-text text-muted">Masukkan lokasi penandatanganan dokumen</small>
                             </div>
                             <div class="form-group">
-                                <label for="tanggal_pk">Tanggal <span class="text-danger">*</span></label>
+                                <label class="form-label" for="tanggal_pk">Tanggal <span class="text-danger">*</span></label>
                                 <input type="hidden" class="form-control" id="tanggal_pk_val" name="tanggal" required>
                                 <input type="text" class="form-control" id="tanggal_pk" required>
                                 <small class="form-text text-muted">Pilih tanggal penandatanganan dokumen</small>
@@ -286,15 +303,41 @@
                         </button>
                     </div>
                     <div class="modal-body" id="previewPK" style="max-height: 80vh; overflow-y: auto;">
-                        <!-- Content akan di-load via AJAX -->
-                        <div class="page-wrapper">
-                            <div class="page-content">
-                                <div class="text-center p-4">
-                                    <div class="spinner-border text-primary" role="status"></div>
+                        <!-- Skeleton loading placeholder -->
+                        <div class="pk-skeleton">
+                            <div class="skeleton-header-pk">
+                                <div class="skeleton-logo"></div>
+                                <div class="skeleton-title-block">
+                                    <div class="skeleton skeleton-title"></div>
+                                    <div class="skeleton skeleton-subtitle"></div>
                                 </div>
-                                <div class="text-center">
-                                    <span>Memuat Data Detail Perjanjian Kinerja... Harap Tunggu Sebentar</span>
+                            </div>
+                            <div class="skeleton-divider"></div>
+                            <div class="skeleton-info-row">
+                                <div class="skeleton-info-item">
+                                    <div class="skeleton skeleton-label"></div>
+                                    <div class="skeleton skeleton-value"></div>
                                 </div>
+                                <div class="skeleton-info-item">
+                                    <div class="skeleton skeleton-label"></div>
+                                    <div class="skeleton skeleton-value"></div>
+                                </div>
+                                <div class="skeleton-info-item">
+                                    <div class="skeleton skeleton-label"></div>
+                                    <div class="skeleton skeleton-value"></div>
+                                </div>
+                            </div>
+                            <div class="skeleton-table-wrap">
+                                <div class="skeleton skeleton-table-header"></div>
+                                <div class="skeleton skeleton-row-pk"></div>
+                                <div class="skeleton skeleton-row-pk"></div>
+                                <div class="skeleton skeleton-row-pk"></div>
+                                <div class="skeleton skeleton-row-pk"></div>
+                                <div class="skeleton skeleton-row-pk"></div>
+                            </div>
+                            <div class="skeleton-footer-pk">
+                                <div class="skeleton skeleton-footer-row"></div>
+                                <div class="skeleton skeleton-footer-row"></div>
                             </div>
                         </div>
                     </div>
@@ -355,7 +398,7 @@
 
     function cetakPK() {
         var printContent = document.getElementById('previewPK').innerHTML;
-        
+
         // Buat window baru untuk print
         var printWindow = window.open('', '_blank');
         printWindow.document.open();
@@ -385,9 +428,9 @@
         printWindow.document.write(printContent);
         printWindow.document.write('</body></html>');
         printWindow.document.close();
-        
+
         // Tunggu konten dimuat, lalu print
-        printWindow.onload = function() {
+        printWindow.onload = function () {
             printWindow.print();
         };
     }
@@ -398,27 +441,31 @@
         body * {
             visibility: hidden;
         }
-        #preview-pk-content, #preview-pk-content * {
+
+        #preview-pk-content,
+        #preview-pk-content * {
             visibility: visible;
         }
+
         #preview-pk-content {
             position: absolute;
             left: 0;
             top: 0;
             width: 100%;
         }
+
         .no-print {
             display: none !important;
         }
     }
-    
+
     .pk-table {
         width: 100%;
         border-collapse: collapse;
         font-size: 11px;
         margin-bottom: 20px;
     }
-    
+
     .pk-table th,
     .pk-table td {
         border: 1px solid #000;
@@ -426,66 +473,66 @@
         text-align: center;
         vertical-align: middle;
     }
-    
+
     .pk-table th {
         background-color: #f0f0f0;
         font-weight: bold;
     }
-    
+
     .pk-table .text-left {
         text-align: left;
     }
-    
+
     .pk-table .text-right {
         text-align: right;
     }
-    
+
     .pk-header {
         text-align: center;
         margin-bottom: 20px;
     }
-    
+
     .pk-header h3 {
         font-size: 14px;
         font-weight: bold;
         margin-bottom: 5px;
     }
-    
+
     .pk-header h4 {
         font-size: 12px;
         font-weight: bold;
         margin-bottom: 20px;
     }
-    
+
     .pk-info {
         margin-bottom: 20px;
     }
-    
+
     .pk-info table {
         width: 100%;
         font-size: 11px;
     }
-    
+
     .pk-info td {
         padding: 3px 10px;
     }
-    
+
     .pk-footer {
         margin-top: 40px;
         display: flex;
         justify-content: space-between;
     }
-    
+
     .pk-signature {
         width: 45%;
         text-align: center;
     }
-    
+
     .pk-signature table {
         width: 100%;
         font-size: 11px;
     }
-    
+
     .pk-checkbox {
         font-size: 14px;
         font-weight: bold;
