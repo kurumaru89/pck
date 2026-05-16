@@ -71,8 +71,8 @@
 <div class="row">
     <div class="col">
         <div id="tabelDetailPKStaf">
-            <!-- Skeleton loading -->
-            <div class="tabel-detail-pk-skeleton">
+            <!-- Skeleton loading — hidden by default, shown on select change -->
+            <div class="tabel-detail-pk-skeleton" id="skeletonDetailPKStaf" style="display:none;">
                 <div class="skeleton-card-header">
                     <div class="skeleton skeleton-card-title"></div>
                     <div class="skeleton-btn-group">

@@ -1015,7 +1015,7 @@ function loadTabelDetailPCK(id) {
 
                     data += `
                         <div class="table-responsive mb-4">
-                            <h5 class="mb-2">
+                            <h5 class="p-2">
                                 <strong>Indikator Kinerja : ${row_pck.nama_indikator}</strong>
                             </h5>
                             <div class="mb-2">
@@ -1776,14 +1776,14 @@ function formatRupiah(angka) {
 }
 
 function loadDetailPKStaf(id) {
-    // Skeleton sudah ada di dalam #tabelDetailPKStaf — tampil saat AJAX loading
-    // .html('') di response handler akan menggantinya dengan data
+    // Tampilkan skeleton saat select berubah
+    $('#skeletonDetailPKStaf').show();
 
     $.post('show_tabel_detail_pk', { id: id }, function (response) {
         try {
             const json = JSON.parse(response); // Pastikan server kirim JSON valid
 
-            $('#tabelDetailPKStaf').html(''); // kosongkan wrapper
+            $('#tabelDetailPKStaf').html(''); // kosongkan skeleton wrapper
             let tombolKepala = ``;
             if (json.status == 1) {
                 tombolKepala = `
@@ -1854,39 +1854,41 @@ function loadDetailPKStaf(id) {
                             bulan_selected = '';
                         }
 
-                        let anggaran = `-`;
-                        if (row_indikator.anggaran) {
-                            anggaran = new Intl.NumberFormat('id-ID').format(row_indikator.anggaran);
-                        }
+                        if (row_sasaran.id == row_indikator.sasaran_id) {
+                            let anggaran = `-`;
+                            if (row_indikator.anggaran) {
+                                anggaran = new Intl.NumberFormat('id-ID').format(row_indikator.anggaran);
+                            }
 
-                        dataIndikator += `
-                        <li>
-                            <strong>${row_indikator.nama_indikator}</strong>
-                            <div class="row">
-                                <div class="col-4">
+                            dataIndikator += `
+                                <li>
+                                    <strong>${row_indikator.nama_indikator}</strong>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <small>
+                                                <i class="zmdi zmdi-gps-dot"></i> Target Mutu : ${row_indikator.target_mutu}
+                                            </small>
+                                        </div>
+                                        <div class="col-4">
+                                            <small>
+                                                <i class="zmdi zmdi-arrows"></i> Target Kuantitas : ${row_indikator.target_kuantitas}
+                                            </small>
+                                        </div>
+                                        <div class="col-4">
+                                            <small>
+                                                <i class="zmdi zmdi-local-activity"></i> Satuan : ${row_indikator.satuan}
+                                            </small>
+                                        </div>
+                                    </div>
                                     <small>
-                                        <i class="zmdi zmdi-gps-dot"></i> Target Mutu : ${row_indikator.target_mutu}
-                                    </small>
-                                </div>
-                                <div class="col-4">
+                                        Bulan : ${bulan_selected}
+                                    </small><br>
                                     <small>
-                                        <i class="zmdi zmdi-arrows"></i> Target Kuantitas : ${row_indikator.target_kuantitas}
+                                        Pagu Anggaran : Rp${anggaran}
                                     </small>
-                                </div>
-                                <div class="col-4">
-                                    <small>
-                                        <i class="zmdi zmdi-local-activity"></i> Satuan : ${row_indikator.satuan}
-                                    </small>
-                                </div>
-                            </div>
-                            <small>
-                                Bulan : ${bulan_selected}
-                            </small><br>
-                            <small>
-                                Pagu Anggaran : Rp${anggaran}
-                            </small>
-                        </li>
-                    `;
+                                </li>
+                            `;
+                        }
                     });
                 }
 
@@ -1927,8 +1929,8 @@ function loadDetailPKStaf(id) {
 }
 
 function loadDetailPCKStaf(id) {
-    // Skeleton sudah ada di dalam #tabelDetailPCKStaf — tampil saat AJAX loading
-    // .html('') di response handler akan menggantinya dengan data
+    // Tampilkan skeleton saat select berubah
+    $('#skeletonDetailPCKStaf').show();
 
     $.post('show_tabel_detail_pck', { id: id }, function (response) {
         try {
@@ -1965,9 +1967,20 @@ function loadDetailPCKStaf(id) {
                     const uraianTugasAll = Array.isArray(json.data_uraian_tugas) ? json.data_uraian_tugas : [];
                     const uraianTugas = uraianTugasAll.filter((t) => String(t.capaian_id) === String(row_pck.id_raw));
 
+                    let thAksi = ``;
+                    let tfootSpan = 8;
+                    if (json.status == 0) {
+                        thAksi = `
+                        <th rowspan="2" width="10%" class="text-center align-middle">
+                            <strong>AKSI</strong>
+                        </th>
+                        `;
+                        tfootSpan = 9;
+                    }
+
                     data += `
                         <div class="table-responsive mb-4">
-                            <h5 class="mb-2">
+                            <h5 class="p-2">
                                 <strong>Indikator Kinerja : ${row_pck.nama_indikator}</strong>
                             </h5>
                             <table class="table table-bordered table-striped table-sm mb-0">
@@ -1985,9 +1998,7 @@ function loadDetailPCKStaf(id) {
                                         <th colspan="3" width="25%" class="text-center">
                                             <strong>REALISASI</strong>
                                         </th>
-                                        <th rowspan="2" width="10%" class="text-center align-middle">
-                                            <strong>AKSI</strong>
-                                        </th>
+                                        ${thAksi}                    
                                         <th rowspan="2" width="10%" class="text-center align-middle">
                                             <strong>NILAI CAPAIAN KINERJA</strong>
                                         </th>
@@ -2016,23 +2027,31 @@ function loadDetailPCKStaf(id) {
                         `;
                     } else {
                         uraianTugas.forEach((row_uraian_tugas, idx) => {
-
-                            let tombolPenilaian = `
-                                <button type="button" class="btn btn-sm btn-primary"
-                                    onclick="modalPenilaian('${id}', '${row_uraian_tugas.id}')"
-                                    data-toggle="tooltip-primary" data-placement="top" data-original-title="Berikan Penilaian">
-                                    <i class="zmdi zmdi-gesture"></i>
-                                </button>
-                            `;
-
-                            if (row_uraian_tugas.realisasi_kualitas) {
+                            let tombolPenilaian = ``;
+                            if (json.status == 0) {
                                 tombolPenilaian += `
-                                    <button type="button" class="btn btn-sm btn-danger"
-                                        onclick="hapusPenilaian('${id}', '${row_uraian_tugas.id}')"
-                                        data-toggle="tooltip-danger" data-placement="top" data-original-title="Hapus Penilaian">
-                                        <i class="zmdi zmdi-delete"></i>
+                                    <td class="text-center">
+                                `;
+
+                                tombolPenilaian += `
+                                    <button type="button" class="btn btn-sm btn-primary"
+                                        onclick="modalPenilaian('${id}', '${row_uraian_tugas.id}')"
+                                        data-toggle="tooltip-primary" data-placement="top" data-original-title="Berikan Penilaian">
+                                        <i class="zmdi zmdi-gesture"></i>
                                     </button>
                                 `;
+
+                                if (row_uraian_tugas.realisasi_kualitas) {
+                                    tombolPenilaian += `
+                                        <button type="button" class="btn btn-sm btn-danger"
+                                            onclick="hapusPenilaian('${id}', '${row_uraian_tugas.id}')"
+                                            data-toggle="tooltip-danger" data-placement="top" data-original-title="Hapus Penilaian">
+                                            <i class="zmdi zmdi-delete"></i>
+                                        </button>
+                                    `;
+                                }
+
+                                tombolPenilaian += `</td>`;
                             }
 
                             const tautan = row_uraian_tugas.tautan ? `
@@ -2068,7 +2087,7 @@ function loadDetailPCKStaf(id) {
                                     <td class="text-center">${row_uraian_tugas.realisasi_kuantitas || ''}</td>
                                     <td class="text-center">${row_uraian_tugas.satuan || ''}</td>
                                     <td class="text-center">${nilai_pck}</td>
-                                    <td class="text-center">${tombolPenilaian}</td>
+                                    ${tombolPenilaian}
                                     <td class="text-center">${row_uraian_tugas.nilai || ''}</td>
                                 </tr>
                             `;
@@ -2077,7 +2096,7 @@ function loadDetailPCKStaf(id) {
 
                     data += `
                                 <tr>
-                                    <td colspan="9" class="text-center">
+                                    <td colspan="${tfootSpan}" class="text-center">
                                         <strong>NILAI CAPAIAN KINERJA</strong>
                                     </td>
                                     <td class="text-center">

@@ -210,6 +210,12 @@ body {
     to { transform: rotate(360deg); }
 }
 
+/* H5 */
+
+.h5, h5 {
+    color: var(--text-primary) !important;
+}
+
 /* ─── Glass Card ─── */
 .glass-card {
     background: var(--glass-bg);
@@ -440,6 +446,26 @@ body {
 }
 
 /* ─── Glass Navbar ─── */
+.nav.nav-tabs .nav-link {
+    color: var(--primary-glow);
+    background: var(--glass-shadow);
+    border-color: var(--primary-gradient);
+}
+
+.nav.nav-tabs .nav-link:hover {
+    border-color: var(--primary-gradient-hover) !important;
+}
+
+.nav.nav-tabs .nav-link.active {
+    color: var(--primary-start);
+    background: var(--glass-bg);
+    border-color: var(--primary-gradient) !important;
+}
+
+.nav.nav-tabs .nav-link.active:hover {
+    border-color: var(--primary-gradient-hover) !important;
+}
+
 .hk-navbar {
     background: rgba(15, 23, 42, 0.9) !important;
     backdrop-filter: blur(var(--glass-blur-strong));
@@ -657,7 +683,7 @@ body {
 .form-control {
     background: var(--glass-bg);
     border: 1px solid rgb(112 94 190);
-    color: var(--dark-200);
+    color: var(--dark-600);
     border-radius: var(--radius-md);
     padding: 10px 14px;
     font-family: var(--font-secondary);
@@ -670,7 +696,7 @@ body {
 .form-control:focus {
     background: var(--glass-bg);
     border-color: var(--primary-start);
-    color: var(--dark-100);
+    color: var(--dark-700);
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2), 0 4px 15px rgba(102, 126, 234, 0.15);
     outline: none;
 }
@@ -779,7 +805,7 @@ body {
     margin-bottom: 4px;
 }
 .select2-container--default .select2-search--dropdown .select2-search__field {
-    background: rgba(30, 41, 59, 0.8) !important;
+    background: var(--dark-900) !important;
     border: 1px solid rgba(102, 126, 234, 0.3) !important;
     color: var(--text-primary) !important;
     border-radius: var(--radius-sm) !important;
@@ -1733,6 +1759,7 @@ body.light-theme .toast-item.light-theme {
 }
 .card-header h5, .card-header h4 {
     font-weight: 600;
+    color: var(--text-primary) !important
 }
 .card-header small {
     color: var(--text-muted) !important;
@@ -1810,7 +1837,6 @@ body.light-theme .toast-item.light-theme {
     color: var(--dark-200) !important;
     white-space: normal;
     word-wrap: break-word;
-    word-break: break-word;
     table-layout: auto;
     width: 100%;
     max-width: none;
@@ -1839,6 +1865,14 @@ body.light-theme .toast-item.light-theme {
     text-align: center;
 }
 
+.table.info {
+    background: var(--glass-shadow) !important;
+}
+
+.table.info th,
+.table.info td {
+    border: #5ebf9f00 !important;
+}
 /* Header gelap dengan teks putih */
 .table thead th,
 .table thead.thead-light th {
@@ -2615,7 +2649,7 @@ body.light-theme .toast-item.light-theme {
 
 .tooltip.tooltip-primary .tooltip-inner, .tooltip.tooltip-brown .tooltip-inner {
     background: var(--primary-end) !important;
-    color: var(--text-primary) !important; 
+    color: whitesmoke !important; 
 }
 
 /* ─── Badge Override ─── */
@@ -3593,12 +3627,12 @@ body.light-theme .table-responsive {
 body.light-theme .form-control {
     background: rgba(255, 255, 255, 0.9) !important;
     border-color: rgba(0, 0, 0, 0.15) !important;
-    color: var(--dark-200) !important;
+    color: var(--dark-600) !important;
 }
 body.light-theme .form-control:focus {
     background: #fff !important;
     border-color: var(--primary-start) !important;
-    color: var(--dark-100) !important;
+    color: var(--dark-500) !important;
 }
 body.light-theme .form-control:disabled,
 body.light-theme .form-control[readonly] {

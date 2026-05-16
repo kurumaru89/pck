@@ -36,23 +36,23 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-0">
-                        <table class="table table-sm table-borderless mb-0">
+                        <table class="table table-sm table-borderless mb-0 info">
                             <tr>
-                                <th class="pl-0 text-muted" width="40%">Nama Periode</th>
+                                <th class="text-muted" width="40%">Nama Periode</th>
                                 <td><span
-                                        class="font-weight-bold text-dark"><?= htmlspecialchars($nama_periode); ?></span>
+                                        class="font-weight-bold"><?= htmlspecialchars($nama_periode); ?></span>
                                 </td>
                             </tr>
                             <tr>
-                                <th class="pl-0 text-muted">Tahun</th>
+                                <th class="text-muted">Tahun</th>
                                 <td><?= htmlspecialchars($tahun); ?></td>
                             </tr>
                         </table>
                     </div>
                     <div class="col-md-6">
-                        <table class="table table-sm table-borderless mb-0">
+                        <table class="table table-sm table-borderless mb-0 info">
                             <tr>
-                                <th class="pl-0 text-muted"  width="40%">Bulan</th>
+                                <th class="text-muted"  width="40%">Bulan</th>
                                 <td>
                                     <?php
                                     $namaBulan = [
@@ -75,7 +75,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th class="pl-0 text-muted">Status</th>
+                                <th class="text-muted">Status</th>
                                 <td>
                                     <?php if ($pengisian->status == 0): ?>
                                         <span class="badge badge-danger">Belum Post</span>
@@ -222,13 +222,13 @@
                             <input type="hidden" id="pck_id" name="pck_id">
 
                             <div class="form-group">
-                                <label for="nama_iki_display">Indikator Kinerja</label>
+                                <label class="form-label" for="nama_iki_display">Indikator Kinerja</label>
                                 <textarea type="text" class="form-control" id="nama_iki_display" rows="5"
                                     readonly></textarea>
                             </div>
 
                             <div class="form-group">
-                                <label for="uraian_tugas">Uraian Tugas <span class="text-danger">*</span></label>
+                                <label class="form-label" for="uraian_tugas">Uraian Tugas <span class="text-danger">*</span></label>
                                 <textarea class="form-control" id="uraian_tugas" name="uraian_tugas" rows="3"
                                     placeholder="Masukkan uraian tugas sesuai dengan pekerjaan yang dilakukan..."
                                     required></textarea>
@@ -237,7 +237,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="satuan">Satuan <span class="text-danger">*</span></label>
+                                <label class="form-label" for="satuan">Satuan <span class="text-danger">*</span></label>
                                 <input class="form-control" id="satuan" name="satuan"
                                     placeholder="Satuan Kegiatan (Laporan, Dokumen, Kegiatan)">
                             </div>
@@ -245,7 +245,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="target_kuantitas">Target Kuantitas <span
+                                        <label class="form-label" for="target_kuantitas">Target Kuantitas <span
                                                 class="text-danger">*</span></label>
                                         <input type="number" class="form-control" id="target_kuantitas"
                                             name="target_kuantitas" min="0" placeholder="0" required>
@@ -253,7 +253,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="target_kuantitas">Realisasi Kuantitas <span
+                                        <label class="form-label" for="target_kuantitas">Realisasi Kuantitas <span
                                                 class="text-danger">*</span></label>
                                         <input type="number" class="form-control" id="realisasi_kuantitas"
                                             name="realisasi_kuantitas" min="0" placeholder="0" required>
@@ -262,7 +262,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="tautan">Tautan Bukti Dukung <span class="text-danger">*</span></label>
+                                <label class="form-label" for="tautan">Tautan Bukti Dukung <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="tautan" name="tautan"
                                     placeholder="Tautan Bukti Dukung atas Uraian Tugas" required>
                                 <small class="form-text text-muted">Tautan Bukti Dukung Berupa <em>Link</em></small>
