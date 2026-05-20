@@ -1140,13 +1140,13 @@ class HalamanCapaianKinerja extends MY_Controller
             } else {
                 $params = [
                     'tabel' => 'v_users',
-                    'where' => [
-                        'jab_id' => $jabatan_id,
-                        'status_pegawai' => 1
-                    ]
+                    'kolom_seleksi' => 'jab_id',
+                    'seleksi' => $jabatan_id,
+                    'kolom_seleksi2' => 'status_pegawai',
+                    'seleksi2' => 1
                 ];
 
-                $result = $this->apihelper->get('apiclient/get_data_seleksi_array', $params);
+                $result = $this->apihelper->get('apiclient/get_data_seleksi2', $params);
 
                 if ($result['status_code'] === 200 && $result['response']['status'] === 'success') {
                     $user_data = $result['response']['data'][0];
