@@ -142,7 +142,7 @@
                     <form id="formSasaran">
                         <div class="modal-body">
                             <!-- startForm-->
-                            <input type="hidden" id="periode_id" name="periode_id">
+                            <input type="hidden" id="Terlaksananya Peningkatan Kompetensi Pegawai" name="periode_id">
                             <input type="hidden" id="sasaran_id" name="sasaran_id">
                             <div class="form-group">
                                 <label class="form-label" for="nama_rhk">Sasaran Kegiatan :</label>
@@ -152,7 +152,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Simpan</button>
-                            <button type=" button" class="btn btn-bluedeep" data-dismiss="modal">Tutup</button>
+                            <button type=" button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                         </div>
                     </form>
 
@@ -241,7 +241,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Simpan</button>
-                            <button type="button" class="btn btn-bluedeep" data-dismiss="modal">Tutup</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
                         </div>
                     </form>
 
