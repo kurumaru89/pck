@@ -1398,20 +1398,18 @@ function ambilSasaranJabatan(id) {
 }
 
 function formPeriodePK(id) {
-    $('#modalPeriode').modal('show');
     $.post('show_periode', {
         id: id
     }, function (response) {
         var json = jQuery.parseJSON(response);
+        $("#periode_id").val('');
+        $("#modalPeriodeJudul").html('');
+        $("#tahun").val('');
+        $("#nama_periode").val('');
+        $("#periode_awal").val('');
+        $("#periode_akhir").val('');
+
         if (json.st == 1) {
-
-            $("#periode_id").val('');
-            $("#modalPeriodeJudul").html('');
-            $("#tahun").val('');
-            $("#nama_periode").val('');
-            $("#periode_awal").val('');
-            $("#periode_akhir").val('');
-
             $("#periode_id").val(json.id);
             $("#modalPeriodeJudul").html(json.judul);
             $("#tahun").val(json.tahun).trigger('change');;
@@ -1419,49 +1417,51 @@ function formPeriodePK(id) {
             $("#periode_awal").val(json.periode_awal);
             $("#periode_akhir").val(json.periode_akhir);
         }
+
+        $('#modalPeriode').modal('show');
     });
 }
 
 function modalSasaran(sasaranId, periodeId) {
-    $('#modalSasaran').modal('show');
     $.post('show_sasaran', {
         sasaranId: sasaranId,
         periodeId: periodeId
     }, function (response) {
         var json = jQuery.parseJSON(response);
+        $("#sasaran_id").val('');
+        $("#periode_id").val('');
+        $("#modalSasaranJudul").html('');
+        $("#nama_sasaran").val('');
         if (json.st == 1) {
-            $("#sasaran_id").val('');
-            $("#periode_id").val('');
-            $("#modalSasaranJudul").html('');
-            $("#nama_sasaran").val('');
 
             $("#sasaran_id").val(json.sasaran_id);
             $("#periode_id").val(json.periode_id);
             $("#modalSasaranJudul").html(json.judul);
             $("#nama_sasaran").val(json.nama_sasaran);
         }
+        $('#modalSasaran').modal('show');
     });
 }
 
 function modalIndikator(indikatorId, sasaranId, periodeId) {
-    $('#modalIndikator').modal('show');
+    
     $.post('show_indikator', {
         indikatorId: indikatorId,
         sasaranId: sasaranId,
         periodeId: periodeId
     }, function (response) {
         var json = jQuery.parseJSON(response);
-        if (json.st == 1) {
-            $("#indikator_id").val('');
-            $("#periode_id_indikator").val('');
-            $("#sasaran_id_indikator").val('');
-            $("#modalIndikatorJudul").html('');
-            $("#target_kuantitas").val('');
-            $("#satuan").val('');
-            $("#nama_indikator").val('');
-            $('.bulan-checkbox').prop('checked', false);
-            $("#anggaran").val('');
+        $("#indikator_id").val('');
+        $("#periode_id_indikator").val('');
+        $("#sasaran_id_indikator").val('');
+        $("#modalIndikatorJudul").html('');
+        $("#target_kuantitas").val('');
+        $("#satuan").val('');
+        $("#nama_indikator").val('');
+        $('.bulan-checkbox').prop('checked', false);
+        $("#anggaran").val('');
 
+        if (json.st == 1) {
             $("#indikator_id").val(json.indikator_id);
             $("#periode_id_indikator").val(json.periode_id);
             $("#sasaran_id_indikator").val(json.sasaran_id);
@@ -1488,6 +1488,8 @@ function modalIndikator(indikatorId, sasaranId, periodeId) {
                 }
             }
         }
+
+        $('#modalIndikator').modal('show');
     });
 }
 

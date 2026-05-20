@@ -142,7 +142,7 @@
                     <form id="formSasaran">
                         <div class="modal-body">
                             <!-- startForm-->
-                            <input type="hidden" id="Terlaksananya Peningkatan Kompetensi Pegawai" name="periode_id">
+                            <input type="hidden" id="periode_id" name="periode_id">
                             <input type="hidden" id="sasaran_id" name="sasaran_id">
                             <div class="form-group">
                                 <label class="form-label" for="nama_rhk">Sasaran Kegiatan :</label>
