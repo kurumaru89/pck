@@ -635,7 +635,7 @@ class HalamanCapaianKinerja extends MY_Controller
     public function show_tabel_detail_pck()
     {
         $id = $this->encryption->decrypt(base64_decode($this->input->post('id')));
-        $indikator = $this->model->get_seleksi_array('ck_capaian_indikator', ['penilaian_id' => $id])->result();
+        $indikator = $this->model->get_seleksi_array('ck_capaian_indikator', ['penilaian_id' => $id], ['indikator_id', 'ASC'])->result();
         $penilaian = $this->model->get_seleksi_array('ck_penilaian', ['id' => $id])->row();
 
         $data = [];
