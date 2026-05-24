@@ -66,7 +66,7 @@ class HalamanLaporan extends MY_Controller
 
         // Format tanggal
         if ($tanggal_input) {
-            $tanggal_obj = DateTime::createFromFormat('Y-m-d', $tanggal_input);
+            $tanggal_obj = DateTime::createFromFormat('d-m-Y', $tanggal_input);
             if ($tanggal_obj) {
                 $tanggal = $tanggal_obj->format('d') . ' ' . $bulan_nama_full[(int) $tanggal_obj->format('n')] . ' ' . $tanggal_obj->format('Y');
             } else {
