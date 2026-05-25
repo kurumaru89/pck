@@ -1398,17 +1398,17 @@ function ambilSasaranJabatan(id) {
 }
 
 function formPeriodePK(id) {
+    $("#periode_id").val('');
+    $("#modalPeriodeJudul").html('');
+    $("#tahun").val('');
+    $("#nama_periode").val('');
+    $("#periode_awal").val('');
+    $("#periode_akhir").val('');
+    
     $.post('show_periode', {
         id: id
     }, function (response) {
         var json = jQuery.parseJSON(response);
-        $("#periode_id").val('');
-        $("#modalPeriodeJudul").html('');
-        $("#tahun").val('');
-        $("#nama_periode").val('');
-        $("#periode_awal").val('');
-        $("#periode_akhir").val('');
-
         if (json.st == 1) {
             $("#periode_id").val(json.id);
             $("#modalPeriodeJudul").html(json.judul);
@@ -1416,6 +1416,11 @@ function formPeriodePK(id) {
             $("#nama_periode").val(json.nama_periode);
             $("#periode_awal").val(json.periode_awal);
             $("#periode_akhir").val(json.periode_akhir);
+
+            initFloatingLabel('#nama_periode');
+            initFloatingLabel('#periode_akhir');
+            initFloatingLabel('#periode_awal');
+            initFloatingLabel('#tahun');
         }
 
         $('#modalPeriode').modal('show');
@@ -1423,44 +1428,44 @@ function formPeriodePK(id) {
 }
 
 function modalSasaran(sasaranId, periodeId) {
+    $("#sasaran_id").val('');
+    $("#periode_id").val('');
+    $("#modalSasaranJudul").html('');
+    $("#nama_sasaran").val('');
+
     $.post('show_sasaran', {
         sasaranId: sasaranId,
         periodeId: periodeId
     }, function (response) {
         var json = jQuery.parseJSON(response);
-        $("#sasaran_id").val('');
-        $("#periode_id").val('');
-        $("#modalSasaranJudul").html('');
-        $("#nama_sasaran").val('');
         if (json.st == 1) {
-
             $("#sasaran_id").val(json.sasaran_id);
             $("#periode_id").val(json.periode_id);
             $("#modalSasaranJudul").html(json.judul);
             $("#nama_sasaran").val(json.nama_sasaran);
+            initFloatingLabel('#nama_sasaran');
         }
         $('#modalSasaran').modal('show');
     });
 }
 
 function modalIndikator(indikatorId, sasaranId, periodeId) {
-    
+    $("#indikator_id").val('');
+    $("#periode_id_indikator").val('');
+    $("#sasaran_id_indikator").val('');
+    $("#modalIndikatorJudul").html('');
+    $("#target_kuantitas").val('');
+    $("#satuan").val('');
+    $("#nama_indikator").val('');
+    $('.bulan-checkbox').prop('checked', false);
+    $("#anggaran").val('');
+
     $.post('show_indikator', {
         indikatorId: indikatorId,
         sasaranId: sasaranId,
         periodeId: periodeId
     }, function (response) {
         var json = jQuery.parseJSON(response);
-        $("#indikator_id").val('');
-        $("#periode_id_indikator").val('');
-        $("#sasaran_id_indikator").val('');
-        $("#modalIndikatorJudul").html('');
-        $("#target_kuantitas").val('');
-        $("#satuan").val('');
-        $("#nama_indikator").val('');
-        $('.bulan-checkbox').prop('checked', false);
-        $("#anggaran").val('');
-
         if (json.st == 1) {
             $("#indikator_id").val(json.indikator_id);
             $("#periode_id_indikator").val(json.periode_id);
@@ -1487,6 +1492,11 @@ function modalIndikator(indikatorId, sasaranId, periodeId) {
                     });
                 }
             }
+
+            initFloatingLabel('#nama_indikator');
+            initFloatingLabel('#target_kuantitas');
+            initFloatingLabel('#satuan');
+            initFloatingLabel('#anggaran');
         }
 
         $('#modalIndikator').modal('show');
@@ -1495,22 +1505,22 @@ function modalIndikator(indikatorId, sasaranId, periodeId) {
 
 function modalUraianTugas(pck_id, uraian_id) {
     // Set nilai form
+    $('#judulUraianTugas').html('');
+    $('#pck_id').val('');
+    $('#uraian_id').val('');
+    $('#nama_iki_display').val('');
+    $('#uraian_tugas').val('');
+    $('#target_kuantitas').val('');
+    $('#satuan').val('');
+    $('#realisasi_kuantitas').val('');
+    $('#tautan').val('');
+
     $.post('show_uraian_tugas', {
         pck_id: pck_id,
         uraian_id: uraian_id
     }, function (response) {
         var json = jQuery.parseJSON(response);
         if (json.st == 1) {
-            $('#judulUraianTugas').html('');
-            $('#pck_id').val('');
-            $('#uraian_id').val('');
-            $('#nama_iki_display').val('');
-            $('#uraian_tugas').val('');
-            $('#target_kuantitas').val('');
-            $('#satuan').val('');
-            $('#realisasi_kuantitas').val('');
-            $('#tautan').val('');
-
             $('#judulUraianTugas').html(json.judul);
             $('#pck_id').val(json.pck_id);
             $('#uraian_id').val(json.uraian_id);
@@ -1520,6 +1530,14 @@ function modalUraianTugas(pck_id, uraian_id) {
             $('#satuan').val(json.satuan);
             $('#realisasi_kuantitas').val(json.realisasi_kuantitas);
             $('#tautan').val(json.tautan);
+
+            initFloatingLabel('#nama_iki_display');
+            initFloatingLabel('#uraian_tugas');
+            initFloatingLabel('#target_kuantitas');
+            initFloatingLabel('#satuan');
+            initFloatingLabel('#realisasi_kuantitas');
+            initFloatingLabel('#tautan');
+
         } else if (json.st == 0) {
             pesan('PERINGATAN', json.msg, '');
         }
@@ -2558,8 +2576,12 @@ function initMonitoringPenilaian() {
             notifikasi(e, 4);
         }
 
-        $(".select2").select2({ width: '100%', allowClear: true });
+        $(".select2").select2({ width: '100%' });
     }, 'json');
+
+    initFloatingLabel('#filterNama');
+    initFloatingLabel('#filterTahun');
+    initFloatingLabel('#filterBulan');
 
     const table = $('#tabelMonitoringPenilaian').DataTable({
         processing: true,
@@ -2677,4 +2699,42 @@ function cetakPCK() {
     printWindow.onload = function () {
         printWindow.print();
     };
+}
+
+function initFloatingLabel(selector) {
+
+    const element = $(selector);
+
+    function toggleLabel(el) {
+        const group = $(el).closest('.form-group');
+
+        if ($(el).val() && $(el).val() !== '') {
+            group.addClass('active');
+        } else {
+            group.removeClass('active');
+        }
+    }
+
+    /* INPUT & TEXTAREA */
+    element.on('focus blur input change', function () {
+        toggleLabel(this);
+    });
+
+    /* SELECT2 */
+    element.on('select2:open', function () {
+        $(this).closest('.form-group').addClass('active');
+    });
+
+    element.on('select2:close', function () {
+        toggleLabel(this);
+    });
+
+    element.on('change', function () {
+        toggleLabel(this);
+    });
+
+    /* INIT AWAL */
+    element.each(function () {
+        toggleLabel(this);
+    });
 }

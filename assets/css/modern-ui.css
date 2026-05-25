@@ -679,6 +679,74 @@ body {
     border-radius: var(--radius-full);
 }
 
+/* ───────── FORM GROUP ───────── */
+.form-group {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+/* ───────── FLOATING LABEL ───────── */
+.form-group .label-float {
+    position: absolute;
+    top: 50%;
+    left: 14px;
+    transform: translateY(-50%);
+    transition: all .2s ease;
+    color: var(--dark-300);
+    padding: 0 4px;
+    pointer-events: none;
+    z-index: 10;
+    font-size: 14px;
+}
+
+/* Label naik */
+.form-group.active .label-float,
+.form-group:focus-within .label-float {
+    top: -1px;
+    font-size: 12px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: whitesmoke;
+    background: var(--primary-gradient);
+    border-radius: var(--radius-sm) !important;
+}
+
+/* ───────── INPUT / INPUT GROUP ───────── */
+.form-group input.form-control,
+.form-group .input-group .form-control,
+.form-group select.form-control
+.form-group textarea.form-control {
+    height: 48px;
+    padding-top: 12px;
+}
+
+/* ───────── SELECT2 ───────── */
+.form-group .select2-container .select2-selection--single {
+    height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    border: 1px solid #ced4da;
+    border-radius: 12px;
+    padding: 0 12px;
+}
+
+/* text value */
+.form-group .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: normal !important;
+    padding-left: 0 !important;
+    padding-right: 20px !important;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+/* arrow */
+.form-group .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100% !important;
+    right: 10px;
+    top: 0;
+}
+
 /* ─── Form Controls ─── */
 .form-control {
     background: var(--glass-bg);
@@ -2692,7 +2760,7 @@ body.light-theme .toast-item.light-theme {
 
 /* ─── DateRangePicker Override ─── */
 .daterangepicker {
-    background: rgba(30, 41, 59, 0.98) !important;
+    background: var(--dark-900) !important;
     border: 1px solid var(--glass-border) !important;
     border-radius: var(--radius-lg) !important;
     box-shadow: var(--glass-shadow-lg) !important;
@@ -2712,7 +2780,7 @@ body.light-theme .toast-item.light-theme {
     background: var(--glass-bg-hover) !important;
 }
 .daterangepicker td.in-range {
-    background: rgba(102, 126, 234, 0.2) !important;
+    background: var(--dark-600) !important;
 }
 .daterangepicker td.active,
 .daterangepicker td.active:hover {
@@ -2727,12 +2795,12 @@ body.light-theme .toast-item.light-theme {
 }
 .daterangepicker td.off {
     background: var(--dark-700) !important;
-    color: #fff !important;
+    color: var(--dark-100) !important;
 }
 .daterangepicker select.monthselect,
 .daterangepicker select.yearselect {
     background: var(--dark-700) !important;
-    color: #fff !important;
+    color: var(--dark-100) !important;
     border: 2px solid var(--primary-start);
 }
 
@@ -3627,7 +3695,7 @@ body.light-theme .table-responsive {
 body.light-theme .form-control {
     background: rgba(255, 255, 255, 0.9) !important;
     border-color: rgba(0, 0, 0, 0.15) !important;
-    color: var(--dark-600) !important;
+    color: var(--dark-200) !important;
 }
 body.light-theme .form-control:focus {
     background: #fff !important;
@@ -3637,7 +3705,7 @@ body.light-theme .form-control:focus {
 body.light-theme .form-control:disabled,
 body.light-theme .form-control[readonly] {
     background: rgba(241, 245, 249, 0.8) !important;
-    color: var(--dark-500) !important;
+    color: var(--dark-200) !important;
     border-color: rgba(0, 0, 0, 0.1) !important;
 }
 body.light-theme select.form-control {
@@ -4089,7 +4157,7 @@ body:not(.light-theme) .form-control[readonly] {
     background-color: rgba(255, 255, 255, 0.06) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
     color: rgba(255, 255, 255, 0.4) !important;
-    cursor: not-allowed;
+    cursor: pointer;
 }
 body:not(.light-theme) .form-control:focus:disabled,
 body:not(.light-theme) .form-control:focus[readonly] {

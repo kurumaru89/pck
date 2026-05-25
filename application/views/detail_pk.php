@@ -1,8 +1,8 @@
 <div class="hk-pg-header">
     <div>
         <h2 class="hk-pg-title font-weight-600 mb-10">Detail Perjanjian Kinerja</h2>
-        <p>Detail Periode Perjanjian Kinerja Pegawai<i class="ion ion-md-help-circle-outline ml-5"
-                data-toggle="tooltip" data-placement="top" title="" data-original-title="Kelola periode penilaian"></i>
+        <p>Detail Periode Perjanjian Kinerja Pegawai<i class="ion ion-md-help-circle-outline ml-5" data-toggle="tooltip"
+                data-placement="top" title="" data-original-title="Kelola periode penilaian"></i>
         </p>
     </div>
 </div>
@@ -145,9 +145,9 @@
                             <input type="hidden" id="periode_id" name="periode_id">
                             <input type="hidden" id="sasaran_id" name="sasaran_id">
                             <div class="form-group">
-                                <label class="form-label" for="nama_rhk">Sasaran Kegiatan :</label>
                                 <textarea class="form-control" id="nama_sasaran" name="nama_sasaran" rows="3"
-                                    placeholder="Deskripsi Sasaran Kegiatan" required></textarea>
+                                    placeholder="" required></textarea>
+                                <label class="label-float" for="nama_rhk">Deskripsi Sasaran Kegiatan</label>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -176,19 +176,20 @@
                             <input type="hidden" id="sasaran_id_indikator" name="sasaran_id">
                             <input type="hidden" id="indikator_id" name="indikator_id">
                             <div class="form-group">
-                                <label class="form-label" for="nama_rhk">Indikator Kinerja :</label>
                                 <textarea class="form-control" id="nama_indikator" name="nama_indikator" rows="3"
-                                    placeholder="Deskripsi Indikator Kinerja Individu" required></textarea>
+                                    placeholder="" required></textarea>
+                                <label class="label-float" for="nama_rhk">Deskripsi Indikator Kinerja Individu</label>
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="target_mutu">Target Kuantitas :</label>
                                 <input type="number" class="form-control" id="target_kuantitas" name="target_kuantitas"
-                                    placeholder="Diisi Dengan Jumlah Target (Contoh : 10))" required>
+                                    placeholder="" required>
+                                <label class="label-float" for="target_mutu">Jumlah Target (Contoh : 90)</label>
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="target_mutu">Satuan :</label>
-                                <input type="text" class="form-control" id="satuan" name="satuan"
-                                    placeholder="Diisi Dengan Satuan Target (Contoh : Laporan)" required>
+                                <input type="text" class="form-control" id="satuan" name="satuan" placeholder=""
+                                    required>
+                                <label class="label-float" for="target_mutu">Satuan Target (Contoh :
+                                    Laporan/Dokumen/Kegiatan/dsb)</label>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Waktu Penyelesaian :</label>
@@ -234,9 +235,9 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="target_mutu">Pagu Anggaran :</label>
-                                <input type="text" class="form-control" id="anggaran" name="anggaran"
-                                    placeholder="Diisi Dengan Jumlah Pagu Anggaran dalam Rupiah (Contoh : 10))">
+                                <input type="text" class="form-control" id="anggaran" name="anggaran" placeholder="">
+                                <label class="label-float" for="target_mutu">Jumlah Pagu Anggaran dalam Rupiah tanpa
+                                    titik (Contoh : 10000000)</label>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -265,13 +266,15 @@
                         <form id="formLokasiTanggal">
                             <input type="hidden" id="periode_id_pk" name="periode_id">
                             <div class="form-group">
-                                <label class="form-label" for="lokasi_pk">Lokasi <span class="text-danger">*</span></label>
+                                <label class="form-label" for="lokasi_pk">Lokasi <span
+                                        class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="lokasi_pk" name="lokasi"
                                     placeholder="Contoh: Jakarta" required>
                                 <small class="form-text text-muted">Masukkan lokasi penandatanganan dokumen</small>
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="tanggal_pk">Tanggal <span class="text-danger">*</span></label>
+                                <label class="form-label" for="tanggal_pk">Tanggal <span
+                                        class="text-danger">*</span></label>
                                 <input type="hidden" class="form-control" id="tanggal_pk_val" name="tanggal" required>
                                 <input type="text" class="form-control" id="tanggal_pk" required>
                                 <small class="form-text text-muted">Pilih tanggal penandatanganan dokumen</small>

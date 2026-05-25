@@ -3,8 +3,8 @@
     <div>
         <h2 class="hk-pg-title font-weight-600 mb-10">Periode Penilaian Capaian Kinerja</h2>
         <p>Daftar Periode Penilaian Capaian Kinerja Pegawai<i class="ion ion-md-help-circle-outline ml-5"
-                data-toggle="tooltip" data-placement="top" title=""
-                data-original-title="Kelola periode penilaian"></i></p>
+                data-toggle="tooltip" data-placement="top" title="" data-original-title="Kelola periode penilaian"></i>
+        </p>
     </div>
     <?php if (!$this->session->userdata('ketua')) { ?>
         <div class="d-flex">
@@ -20,7 +20,8 @@
     <div class="col-xl-12">
         <!-- Page Alerts -->
         <div class="alert alert-primary alert-wth-icon fade show" role="alert">
-            <span class="alert-icon-wrap"><i class="zmdi zmdi-info"></i></span> Kelola periode penilaian capaian kinerja pegawai di halaman ini.
+            <span class="alert-icon-wrap"><i class="zmdi zmdi-info"></i></span> Kelola periode penilaian capaian kinerja
+            pegawai di halaman ini.
         </div>
         <!-- /Page Alerts -->
 
@@ -56,43 +57,42 @@
                         <div class="modal-body">
                             <input type="hidden" id="periode_id" name="periode_id">
                             <div class="form-group">
-                                <label class="form-label">Nama Periode <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="nama_periode" name="nama_periode" required
-                                    placeholder="Nama Periode" autocomplete="off">
+                                    autocomplete="off" placeholder="">
+                                <label class="label-float">Nama Periode <span class="text-danger">*</span></label>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Tahun <span class="text-danger">*</span></label>
                                 <select name="tahun" id="tahun" class="form-control">
-                                    <option value="">Pilih Tahun</option>
                                 </select>
+                                <label class="label-float">Tahun <span class="text-danger">*</span></label>
                             </div>
                             <div class="row">
                                 <div class="col-lg-6 col-md-12">
                                     <div class="form-group">
-                                        <label class="form-label">Periode Awal <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <input type="hidden" name="periode_awal" id="periode_awal_val">
-                                            <input type="text" class="form-control" id="periode_awal"
-                                                placeholder="Pilih Tanggal Periode Awal" autocomplete="off" readonly
-                                                required>
+                                            <input type="text" class="form-control" id="periode_awal" autocomplete="off"
+                                                readonly required>
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><i class="zmdi zmdi-calendar"></i></div>
                                             </div>
                                         </div>
+                                        <label class="label-float">Periode Awal <span
+                                                class="text-danger">*</span></label>
                                     </div>
                                 </div>
                                 <div class="col-lg-6 col-md-12">
                                     <div class="form-group">
-                                        <label class="form-label">Periode Akhir <span class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <input type="hidden" name="periode_akhir" id="periode_akhir_val">
                                             <input type="text" class="form-control" id="periode_akhir"
-                                                placeholder="Pilih Tanggal Periode Akhir" autocomplete="off" readonly
-                                                required>
+                                                autocomplete="off" readonly required>
                                             <div class="input-group-append">
                                                 <div class="input-group-text"><i class="zmdi zmdi-calendar"></i></div>
                                             </div>
                                         </div>
+                                        <label class="label-float">Periode Akhir <span
+                                                class="text-danger">*</span></label>
                                     </div>
                                 </div>
                             </div>

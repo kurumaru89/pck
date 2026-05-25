@@ -21,26 +21,26 @@
                 <div class="row mb-3">
                     <div class="col-md-5">
                         <div class="form-group mb-md-0">
-                            <label class="form-label">Nama</label>
                             <select id="filterNama" class="form-control select2" style="width:100%">
-                                <option value="">Semua</option>
+                                <option value="0">Semua</option>
                             </select>
+                            <label class="label-float">Nama Pegawai</label>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group mb-md-0">
-                            <label class="form-label">Tahun</label>
                             <select id="filterTahun" class="form-control select2" style="width:100%">
-                                <option value="">Semua</option>
+                                <option value="0">Semua</option>
                             </select>
+                            <label class="label-float">Tahun</label>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group mb-md-0">
-                            <label class="form-label">Bulan</label>
                             <select id="filterBulan" class="form-control select2" style="width:100%">
-                                <option value="">Semua</option>
+                                <option value="0">Semua</option>
                             </select>
+                            <label class="label-float">Bulan</label>
                         </div>
                     </div>
                 </div>
@@ -147,6 +147,6 @@
         if (typeof initMonitoringPenilaian === 'function') {
             initMonitoringPenilaian();
         }
-        $(".select2").select2({ width: '100%', allowClear: true });
+        $(".select2").select2({ width: '100%' });
     });
 </script>

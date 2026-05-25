@@ -126,9 +126,7 @@
                         <div class="modal-body">
                             <input type="hidden" id="periode_id" name="periode_id">
                             <div class="form-group">
-                                <label>Periode Penilaian <span class="text-danger">*</span></label>
                                 <select class="form-control select2" id="bulan" name="bulan" required>
-                                    <option value="">-- Pilih Periode --</option>
                                     <option value="1">Januari</option>
                                     <option value="2">Februari</option>
                                     <option value="3">Maret</option>
@@ -142,6 +140,7 @@
                                     <option value="11">November</option>
                                     <option value="12">Desember</option>
                                 </select>
+                                <label class="label-float">Pilih Periode Penilaian <span class="text-danger">*</span></label>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -163,4 +162,6 @@
     $(function () {
         $(".select2").select2();
     });
+
+    initFloatingLabel('#bulan');
 </script>

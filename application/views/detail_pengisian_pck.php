@@ -39,8 +39,7 @@
                         <table class="table table-sm table-borderless mb-0 info">
                             <tr>
                                 <th class="text-muted" width="40%">Nama Periode</th>
-                                <td><span
-                                        class="font-weight-bold"><?= htmlspecialchars($nama_periode); ?></span>
+                                <td><span class="font-weight-bold"><?= htmlspecialchars($nama_periode); ?></span>
                                 </td>
                             </tr>
                             <tr>
@@ -52,7 +51,7 @@
                     <div class="col-md-6">
                         <table class="table table-sm table-borderless mb-0 info">
                             <tr>
-                                <th class="text-muted"  width="40%">Bulan</th>
+                                <th class="text-muted" width="40%">Bulan</th>
                                 <td>
                                     <?php
                                     $namaBulan = [
@@ -222,51 +221,52 @@
                             <input type="hidden" id="pck_id" name="pck_id">
 
                             <div class="form-group">
-                                <label class="form-label" for="nama_iki_display">Indikator Kinerja</label>
                                 <textarea type="text" class="form-control" id="nama_iki_display" rows="5"
                                     readonly></textarea>
+                                <label class="label-float" for="nama_iki_display">Indikator Kinerja</label>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label" for="uraian_tugas">Uraian Tugas <span class="text-danger">*</span></label>
+                            <div class="form-group mb-0">
                                 <textarea class="form-control" id="uraian_tugas" name="uraian_tugas" rows="3"
-                                    placeholder="Masukkan uraian tugas sesuai dengan pekerjaan yang dilakukan..."
-                                    required></textarea>
-                                <small class="form-text text-muted">Jelaskan secara detail pekerjaan yang telah
-                                    dilaksanakan.</small>
+                                    placeholder="" required></textarea>
+                                <label class="label-float" for="uraian_tugas">Masukkan uraian tugas sesuai dengan
+                                    pekerjaan yang dilakukan <span class="text-danger">*</span></label>
                             </div>
+                            <small class="form-text text-muted mb-4">Jelaskan secara detail pekerjaan yang telah
+                                dilaksanakan.</small>
 
                             <div class="form-group">
-                                <label class="form-label" for="satuan">Satuan <span class="text-danger">*</span></label>
-                                <input class="form-control" id="satuan" name="satuan"
-                                    placeholder="Satuan Kegiatan (Laporan, Dokumen, Kegiatan)">
+                                <input class="form-control" id="satuan" name="satuan" placeholder="">
+                                <label class="label-float" for="satuan">Satuan Kegiatan (Laporan, Dokumen, Kegiatan)
+                                    <span class="text-danger">*</span></label>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="form-label" for="target_kuantitas">Target Kuantitas <span
-                                                class="text-danger">*</span></label>
                                         <input type="number" class="form-control" id="target_kuantitas"
-                                            name="target_kuantitas" min="0" placeholder="0" required>
+                                            name="target_kuantitas" min="0" placeholder="" required>
+                                        <label class="label-float" for="target_kuantitas">Target Kuantitas <span
+                                                class="text-danger">*</span></label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="form-label" for="target_kuantitas">Realisasi Kuantitas <span
-                                                class="text-danger">*</span></label>
                                         <input type="number" class="form-control" id="realisasi_kuantitas"
-                                            name="realisasi_kuantitas" min="0" placeholder="0" required>
+                                            name="realisasi_kuantitas" min="0" placeholder="" required>
+                                        <label class="label-float" for="target_kuantitas">Realisasi Kuantitas <span
+                                                class="text-danger">*</span></label>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label" for="tautan">Tautan Bukti Dukung <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="tautan" name="tautan"
-                                    placeholder="Tautan Bukti Dukung atas Uraian Tugas" required>
-                                <small class="form-text text-muted">Tautan Bukti Dukung Berupa <em>Link</em></small>
+                            <div class="form-group mb-0">
+                                <input type="text" class="form-control" id="tautan" name="tautan" placeholder=""
+                                    required>
+                                <label class="label-float" for="tautan">Tautan Bukti Dukung atas Uraian Tugas <span
+                                        class="text-danger">*</span></label>
                             </div>
+                            <small class="form-text text-muted">Tautan Bukti Dukung Berupa <em>Link</em></small>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">
