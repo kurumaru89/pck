@@ -855,9 +855,11 @@ class HalamanCapaianKinerja extends MY_Controller
 
         $result = $this->model->proses_simpan_uraian_tugas($data);
         if ($result['status']) {
-            $pck_data = $this->model->get_seleksi_array('v_uraian_tugas', [
-                'capaian_id' => $this->encryption->decrypt(base64_decode($this->input->post('pck_id')))
-            ])->row();
+            $pck_data = $this->model->get_seleksi(
+                'v_uraian_tugas',
+                'capaian_id',
+                $this->encryption->decrypt(base64_decode($this->input->post('pck_id')))
+            )->row();
 
             $dataNotif = array(
                 'jenis_pesan' => 'pck',

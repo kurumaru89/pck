@@ -73,6 +73,16 @@ class Model extends CI_Model
         return $query->result();
     }
 
+    public function get_seleksi($tabel, $kolom_seleksi, $seleksi)
+    {
+        try {
+            $this->db->where($kolom_seleksi, $seleksi);
+            return $this->db->get($tabel);
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
     public function get_seleksi_array($tabel, $where = [], $order_by = [])
     {
         try {
@@ -139,7 +149,8 @@ class Model extends CI_Model
         }
     }
 
-    public function get_periode_ketua() {
+    public function get_periode_ketua()
+    {
         $this->db->select('*');
         $this->db->from('pk_periode');
         $this->db->where('jabatan_id_penilai', '1');
@@ -149,7 +160,8 @@ class Model extends CI_Model
         return $this->db->get();
     }
 
-    public function get_penilaian_ketua($tahun) {
+    public function get_penilaian_ketua($tahun)
+    {
         $this->db->select('pe.tahun AS tahun, p.bulan AS bulan');
         $this->db->from('ck_penilaian p');
         $this->db->join('pk_periode pe', 'p.periode_id = pe.id', 'left');
@@ -1027,7 +1039,8 @@ class Model extends CI_Model
         $bulan = (int) ($params['bulan'] ?? date('n'));
         $periode_ids = $params['periode_ids'] ?? [];
         $limit = (int) ($params['limit'] ?? 10);
-        if ($limit <= 0 || $limit > 50) $limit = 10;
+        if ($limit <= 0 || $limit > 50)
+            $limit = 10;
 
         if (!is_array($periode_ids) || count($periode_ids) === 0) {
             return [];
