@@ -1,7 +1,8 @@
 <nav class="hk-breadcrumb" aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="javascript:;" data-page="pck">Periode Perjanjian Kinerja</a></li>
-        <li class="breadcrumb-item"><a href="javascript:;" data-page="penilaian_pck" data-id="<?= $periode_id ?>">Penilaian Capaian Kinerja</a></li>
+        <li class="breadcrumb-item"><a href="javascript:;" data-page="penilaian_pck"
+                data-id="<?= $periode_id ?>">Penilaian Capaian Kinerja</a></li>
         <li class="breadcrumb-item active" aria-current="page">Evaluasi Capaian Kinerja Pegawai</li>
     </ol>
 </nav>
@@ -98,23 +99,23 @@
                         <input type="hidden" id="penilaian_id" name="penilaian_id">
 
                         <div class="form-group">
-                            <label for="uraian_tugas">Uraian Tugas</label>
                             <textarea class="form-control filled-input" id="uraian_tugas" rows="3" readonly></textarea>
+                            <label class="label-float" for="uraian_tugas">Uraian Tugas</label>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="target_kuantitas">Target</label>
                                     <input type="number" class="form-control filled-input" id="target_kuantitas"
                                         readonly>
+                                    <label class="label-float" for="target_kuantitas">Target</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="realisasi_kuantitas">Realisasi</label>
                                     <input type="number" class="form-control filled-input" id="realisasi_kuantitas"
                                         readonly>
+                                    <label class="label-float" for="realisasi_kuantitas">Realisasi</label>
                                 </div>
                             </div>
                         </div>
@@ -123,13 +124,13 @@
                             <div id="tautan"></div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="realisasi_kualitas">Mutu Realisasi <span class="text-danger">*</span></label>
+                        <div class="form-group mb-0">
                             <input type="number" class="form-control" id="realisasi_kualitas" name="realisasi_kualitas"
-                                min="0" max="100" placeholder="0-100" required>
-                            <span class="text-mute">Diisi dengan kualitas hasil uraian tugas yang dikerjakan</span>
+                                min="0" max="100" placeholder="" required>
+                            <label class="label-float" for="realisasi_kualitas">Mutu Realisasi (0-100)<span
+                                    class="text-danger">*</span></label>
                         </div>
-
+                        <span class="text-mute">Diisi dengan kualitas hasil uraian tugas yang dikerjakan</span>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">

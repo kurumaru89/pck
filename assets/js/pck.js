@@ -1404,7 +1404,7 @@ function formPeriodePK(id) {
     $("#nama_periode").val('');
     $("#periode_awal").val('');
     $("#periode_akhir").val('');
-    
+
     $.post('show_periode', {
         id: id
     }, function (response) {
@@ -2445,21 +2445,20 @@ function modalPeriodePenilaian(periodeId) {
 }
 
 function modalPenilaian(penilaian_id, uraian_id) {
+    $("#judulUraianTugas").html('');
+    $("#uraian_id").val('');
+    $("#penilaian_id").val('');
+    $("#uraian_tugas").val('');
+    $("#target_kuantitas").val('');
+    $("#realisasi_kuantitas").val('');
+    $("#tautan").html('');
+    $("#realisasi_kualitas").val('');
+
     $.post('show_penilaian_uraian', {
         uraian_id: uraian_id
     }, function (response) {
         var json = jQuery.parseJSON(response);
         if (json.st == 1) {
-            $('#modalNilaiUraianTugas').modal('show');
-
-            $("#judulUraianTugas").html('');
-            $("#uraian_id").val('');
-            $("#penilaian_id").val('');
-            $("#uraian_tugas").val('');
-            $("#target_kuantitas").val('');
-            $("#realisasi_kuantitas").val('');
-            $("#tautan").html('');
-            $("#realisasi_kualitas").val('');
 
             $("#judulUraianTugas").html(json.judul);
             $("#uraian_id").val(json.uraian_id);
@@ -2470,6 +2469,12 @@ function modalPenilaian(penilaian_id, uraian_id) {
             $("#tautan").append('<a href="' + json.tautan + '" target="_blank">Bukti Dukung</a>');
             $("#realisasi_kualitas").val(json.kualitas);
 
+            initFloatingLabel('#uraian_tugas');
+            initFloatingLabel('#target_kuantitas');
+            initFloatingLabel('#realisasi_kuantitas');
+            initFloatingLabel('#realisasi_kualitas');
+
+            $('#modalNilaiUraianTugas').modal('show');
         } else {
             notifikasi('Ada kesalahan, silakan ulangi atau hubungi Admin', 4);
         }

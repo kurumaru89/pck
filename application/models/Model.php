@@ -373,14 +373,13 @@ class Model extends CI_Model
 
     public function proses_pengambilan_data_penilaian($penilaian_id)
     {
-        $this->db->select('u.realisasi_kualitas, p.id AS penilaian');
-        $this->db->from('ck_uraian_tugas u');
-        $this->db->join('ck_capaian_indikator c', 'u.capaian_id = c.id', 'left');
-        $this->db->join('ck_penilaian p', 'c.penilaian_id = p.id', 'left');
-        $this->db->where('c.hapus', 0);
-        $this->db->where('u.hapus', 0);
-        $this->db->where('u.realisasi_kualitas IS NULL');
-
+        $this->db->select('*');
+        $this->db->from('v_uraian_tugas');
+        $this->db->where('uraian_hapus', 0);
+        $this->db->where('capaian_indikator_hapus', 0);
+        $this->db->where('periode_hapus', 0);
+        $this->db->where('penilaian_id', $penilaian_id);
+        $this->db->where('realisasi_kualitas IS NULL');
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             return [
