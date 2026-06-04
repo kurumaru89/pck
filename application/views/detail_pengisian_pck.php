@@ -21,7 +21,7 @@
                     <i class="zmdi zmdi-file-text"></i> Informasi Periode Pengisian Capaian Kinerja
                 </h3>
                 <div class="d-flex align-items-center card-action-wrap">
-                    <?php if ($pengisian->status > 0): ?>
+                    <?php if ($pengisian->status == 2): ?>
                         <button type="button" class="btn btn-sm btn-success mr-2"
                             onclick="previewPCK(<?= $pengisian->id ?>, <?= $pengisian->status ?>)">
                             <i class="zmdi zmdi-file-text"></i> Cetak Capaian Kinerja
@@ -75,13 +75,7 @@
                             </tr>
                             <tr>
                                 <th class="text-muted">Status</th>
-                                <td>
-                                    <?php if ($pengisian->status == 0): ?>
-                                        <span class="badge badge-danger">Belum Post</span>
-                                    <?php elseif ($pengisian->status == 1): ?>
-                                        <span class="badge badge-success">Sudah Post</span>
-                                    <?php endif; ?>
-                                </td>
+                                <td id="status_validasi"></td>
                             </tr>
                         </table>
                     </div>
@@ -93,18 +87,8 @@
 
 <div class="row">
     <div class="col">
-        <?php if ($pengisian->status == 0) {
-            $class_status = 'danger';
-            $pesan = 'Capaian Kinerja Bulan Ini Belum Diposting, Silakan Klik Tombol Posting';
-        } elseif ($pengisian->status == 1) {
-            $class_status = 'success';
-            $pesan = 'Penilaian Kinerja Anda Sudah Diposting';
-        }
-        ?>
         <!-- Page Alerts -->
-        <div class="alert alert-<?= $class_status ?> alert-wth-icon alert-dismissible fade show" role="alert">
-            <span class="alert-icon-wrap"><i class="zmdi zmdi-help"></i></span> <?= $pesan ?>
-        </div>
+        <div id="status_alert"></div>
         <!-- /Page Alerts -->
 
         <div id="tabelDetailPCK">
@@ -266,7 +250,17 @@
                                 <label class="label-float" for="tautan">Tautan Bukti Dukung atas Uraian Tugas <span
                                         class="text-danger">*</span></label>
                             </div>
-                            <small class="form-text text-muted">Tautan Bukti Dukung Berupa <em>Link</em></small>
+                            <small class="form-group form-text text-muted">Tautan Bukti Dukung Berupa
+                                <em>Link</em></small>
+
+                            <div class="form-group mb-0">
+                                <input type="number" class="form-control" id="realisasi_kualitas"
+                                    name="realisasi_kualitas" min="0" max="100" placeholder="" required>
+                                <label class="label-float" for="realisasi_kualitas">Mutu Hasil Kerja (0-100)<span
+                                        class="text-danger">*</span></label>
+                            </div>
+                            <span class="form-text text-muted">Diisi dengan kualitas hasil uraian tugas yang
+                                dikerjakan</span>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">

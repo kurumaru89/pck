@@ -946,13 +946,37 @@ function loadTabelDetailPCK(id) {
         try {
             const json = JSON.parse(response); // Pastikan server kirim JSON valid
 
+            $('#status_validasi').html('');
+            $('#status_alert').html('');
+            let class_status;
+            let pesan;
             $('#tabelDetailPCK').html(''); // kosongkan wrapper
 
+            if (json.status == 0) {
+                $('#status_validasi').html('<span class="badge badge-danger">Belum Disetujui</span>');
+                class_status = 'danger';
+                pesan = 'Capaian Kinerja Bulan Ini Belum Mendapat Persetujuan Atasan, Silakan Klik Ajukan Persetujuan';
+            } else if (json.status == 1) {
+                $('#status_validasi').html('<span class="badge badge-warning">Dalam Proses Telaah Atasan</span>');
+                class_status = 'warning';
+                pesan = 'Capaian Kinerja Anda Sedang Ditelaah Atasan';
+            } else {
+                $('#status_validasi').html('<span class="badge badge-success">Sudah Disetujui</span>');
+                class_status = 'success';
+                pesan = 'Capaian Kinerja Anda Sudah Disetujui Atasan';
+            }
+
+            $('#status_alert').html(`
+                <div class="alert alert-${class_status} alert-wth-icon alert-dismissible fade show" role="alert">
+                    <span class="alert-icon-wrap"><i class="zmdi zmdi-help"></i></span>
+                    ${pesan}
+                    </div>
+                `);
             let tombolKepala = ``;
             if (json.status == 0) {
                 tombolKepala = `
-                    <button type="button" class="btn btn-success mr-2" onclick="postingPCK('${id}')" 
-                        data-toggle="tooltip-primary" data-placement="top" data-original-title="Posting PCK">
+                    <button type="button" class="btn btn-success mr-2" onclick="approvalAtasan('${id}')" 
+                        data-toggle="tooltip-primary" data-placement="top" data-original-title="Ajukan Persetujuan Atasan">
                         <i class="zmdi zmdi-upload"></i> 
                     </button>
                     <button type="button" class="btn btn-primary mr-2" onclick="modalIndikator('-1', '${id}')" 
@@ -998,16 +1022,11 @@ function loadTabelDetailPCK(id) {
                                 title="Tambah Uraian Tugas">
                                 <i class="zmdi zmdi-plus"></i> Tambah Uraian Tugas
                             </button>
+                            <button type="button" class="btn btn-sm btn-danger"
+                                onclick="hapusCapaianIndikator('${row_pck.id}')" title="Hapus Indikator Kinerja">
+                                <i class="zmdi zmdi-delete"></i> Hapus Indikator Kinerja
+                            </button>
                         `;
-
-                        if (row_pck.capaian == 0) {
-                            tombolIndikator += `
-                                <button type="button" class="btn btn-sm btn-danger"
-                                    onclick="hapusCapaianIndikator('${row_pck.id}')" title="Hapus Indikator Kinerja">
-                                    <i class="zmdi zmdi-delete"></i> Hapus Indikator Kinerja
-                                </button>                            
-                            `;
-                        }
                     }
 
                     const uraianTugasAll = Array.isArray(json.data_uraian_tugas) ? json.data_uraian_tugas : [];
@@ -1065,7 +1084,7 @@ function loadTabelDetailPCK(id) {
                     } else {
                         uraianTugas.forEach((row_uraian_tugas, idx) => {
                             let tombolUraianTugas = ``;
-                            if (json.status == 0 && row_uraian_tugas.realisasi_kualitas == null) {
+                            if (json.status == 0) {
                                 tombolUraianTugas = `
                                     <button type="button" class="btn btn-sm btn-primary"
                                         onclick="modalUraianTugas('${row_pck.id}', '${row_uraian_tugas.id}')"
@@ -1514,6 +1533,7 @@ function modalUraianTugas(pck_id, uraian_id) {
     $('#satuan').val('');
     $('#realisasi_kuantitas').val('');
     $('#tautan').val('');
+    $('#realisasi_kualitas').val('');
 
     $.post('show_uraian_tugas', {
         pck_id: pck_id,
@@ -1530,6 +1550,7 @@ function modalUraianTugas(pck_id, uraian_id) {
             $('#satuan').val(json.satuan);
             $('#realisasi_kuantitas').val(json.realisasi_kuantitas);
             $('#tautan').val(json.tautan);
+            $('#realisasi_kualitas').val(json.realisasi_kualitas);
 
             initFloatingLabel('#nama_iki_display');
             initFloatingLabel('#uraian_tugas');
@@ -1537,6 +1558,7 @@ function modalUraianTugas(pck_id, uraian_id) {
             initFloatingLabel('#satuan');
             initFloatingLabel('#realisasi_kuantitas');
             initFloatingLabel('#tautan');
+            initFloatingLabel('#realisasi_kualitas');
 
         } else if (json.st == 0) {
             pesan('PERINGATAN', json.msg, '');
@@ -1692,7 +1714,9 @@ function loadPCK(periodeId) {
                 json.data_periode.forEach((row, index) => {
                     let statusBadge = '';
                     if (row.status == '1') {
-                        statusBadge = '<span class="badge badge-success radius-30">Sudah Posting</span>';
+                        statusBadge = '<span class="badge badge-warning radius-30">Proses Persetujuan</span>';
+                    } else if (row.status == '2') {
+                        statusBadge = '<span class="badge badge-success radius-30">Sudah Disetujui</span>';
                     } else {
                         statusBadge = '<span class="badge badge-danger radius-30">Draft</span>';
                     }
@@ -1948,7 +1972,7 @@ function loadDetailPKStaf(id) {
     });
 }
 
-function loadDetailPCKStaf(id) {
+function loadDetailPCKStaf(id, evaluasi_id) {
     // Tampilkan skeleton saat select berubah
     $('#skeletonDetailPCKStaf').show();
 
@@ -1957,6 +1981,72 @@ function loadDetailPCKStaf(id) {
             const json = JSON.parse(response); // Pastikan server kirim JSON valid
 
             $('#tabelDetailPCKStaf').html(''); // kosongkan wrapper
+            $('#dataPCKPegawai').html('');
+
+            const namaBulan = [
+                '',
+                'Januari',
+                'Februari',
+                'Maret',
+                'April',
+                'Mei',
+                'Juni',
+                'Juli',
+                'Agustus',
+                'September',
+                'Oktober',
+                'November',
+                'Desember'
+            ];
+
+            let bulanText = (json.bulan && namaBulan[json.bulan])
+                ? namaBulan[json.bulan]
+                : '-';
+
+            let infoPCK = `
+                <div class="card card-primary card-outline">
+                    <div class="card-header card-header-action">
+                        <h3>
+                            <i class="zmdi zmdi-file-text"></i> Informasi Periode Penilaian Capaian Kinerja
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-0">
+                                <table class="table table-sm table-borderless mb-0 info">
+                                    <tr>
+                                        <th class="text-muted" width="40%">Bulan</th>
+                                        <td>${bulanText}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Tahun</th>
+                                        <td>${json.tahun}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-sm table-borderless mb-0 info">
+                                    <tr>
+                                        <th class="text-muted">Nilai</th>
+                                        <td><span class="badge badge-pill badge-success">${json.nilai}</span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            let tombolKepala = ``;
+            if (json.status == 1) {
+                console.log(json);
+                tombolKepala = `
+                    <button type="button" class="btn btn-sm btn-warning mr-2" onclick="persetujuanPCK('${id}', '${evaluasi_id}')" 
+                        data-toggle="tooltip-primary" data-placement="top" data-original-title="Persetujuan Penilaian Capaian Kinerja">
+                        <i class="zmdi zmdi-badge-check"></i>
+                    </button>
+                `;
+            }
 
             // Kalau ada data, buat tabelnya
             let data = `
@@ -1965,6 +2055,9 @@ function loadDetailPCKStaf(id) {
                     <h3>
                         <i class="zmdi zmdi-file-text"></i> Detail Penilaian Capaian Kinerja Pegawai
                     </h3>
+                    <div class="d-flex align-items-center card-action-wrap">
+                        ${tombolKepala}
+                    </div>
                 </div>
                 <div class="card-body">
             `;
@@ -1989,7 +2082,7 @@ function loadDetailPCKStaf(id) {
 
                     let thAksi = ``;
                     let tfootSpan = 8;
-                    if (json.status == 0) {
+                    if (json.status == 1) {
                         thAksi = `
                         <th rowspan="2" width="10%" class="text-center align-middle">
                             <strong>AKSI</strong>
@@ -2048,7 +2141,7 @@ function loadDetailPCKStaf(id) {
                     } else {
                         uraianTugas.forEach((row_uraian_tugas, idx) => {
                             let tombolPenilaian = ``;
-                            if (json.status == 0) {
+                            if (json.status == 1) {
                                 tombolPenilaian += `
                                     <td class="text-center">
                                 `;
@@ -2060,16 +2153,6 @@ function loadDetailPCKStaf(id) {
                                         <i class="zmdi zmdi-gesture"></i>
                                     </button>
                                 `;
-
-                                if (row_uraian_tugas.realisasi_kualitas) {
-                                    tombolPenilaian += `
-                                        <button type="button" class="btn btn-sm btn-danger"
-                                            onclick="hapusPenilaian('${id}', '${row_uraian_tugas.id}')"
-                                            data-toggle="tooltip-danger" data-placement="top" data-original-title="Hapus Penilaian">
-                                            <i class="zmdi zmdi-delete"></i>
-                                        </button>
-                                    `;
-                                }
 
                                 tombolPenilaian += `</td>`;
                             }
@@ -2135,6 +2218,7 @@ function loadDetailPCKStaf(id) {
                 `;
             }
 
+            $('#dataPCKPegawai').append(infoPCK);
             $('#tabelDetailPCKStaf').append(data);
             $('#tabelDetailPCKStaf [data-toggle="tooltip-danger"]').tooltip({
                 template: '<div class="tooltip tooltip-danger" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'
@@ -2365,6 +2449,61 @@ function batalPersetujuanPK(id) {
     });
 }
 
+function persetujuanPCK(id, evaluasi_id) {
+    Swal.fire({
+        title: 'Konfirmasi Persetujuan PCK<br>Berikan Persetujuan?',
+        text: 'Notifikasi akan dikirim kepada Staf Yang Bersangkutan.',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Setuju',
+        cancelButtonText: 'Batal',
+        reverseButtons: true
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+
+            // proses posting di sini
+            $.ajax({
+                url: 'validasi_penilaian_pck',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    id: id
+                },
+
+                beforeSend: function () {
+                    // Gunakan Swal.mixin untuk instance yang terpisah
+                    const loadingSwal = Swal.mixin({
+                        title: 'Memproses...',
+                        text: 'Sedang menyetujui penilaian',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    loadingSwal.fire();
+                },
+
+                success: function (res) {
+                    // Tutup loading Swal sebelum menampilkan notifikasi
+                    // dan loadPage akan me-refresh konten
+                    notifikasi(res.message, res.success);
+                    if (res.success == 1) {
+                        loadPage('detail_evaluasi_pck', evaluasi_id);
+                    }
+                },
+
+                error: function () {
+                    notifikasi('Terjadi kesalahan saat mengirim penilaian.', 4);
+                },
+                complete: function () {
+                    Swal.close();
+                }
+            });
+        }
+    });
+}
+
 function toggleKeterangan() {
     const aksi = document.getElementById('swal_aksi_validasi').value;
     const keteranganGroup = document.getElementById('swal_keterangan_group');
@@ -2481,7 +2620,7 @@ function modalPenilaian(penilaian_id, uraian_id) {
     });
 }
 
-function postingPCK(penilaian_id) {
+function approvalAtasan(penilaian_id) {
     $.ajax({
         url: 'get_data_penilaian_pck',
         type: 'POST',
@@ -2495,8 +2634,8 @@ function postingPCK(penilaian_id) {
             if (response.success) {
 
                 Swal.fire({
-                    title: 'Nilai PCK anda ' + response.nilai + '<br>Kirim Penilaian?',
-                    text: 'Data penilaian yang sudah dikirim tidak dapat diubah kembali.',
+                    title: 'Nilai PCK anda ' + response.nilai + '<br>Kirim Penilaian kepada Atasan?',
+                    text: 'Notifikasi akan dikirim kepada Atasan Langsung.',
                     icon: 'info',
                     showCancelButton: true,
                     confirmButtonText: 'Ya, Kirim',
@@ -2508,7 +2647,7 @@ function postingPCK(penilaian_id) {
 
                         // proses posting di sini
                         $.ajax({
-                            url: 'posting_penilaian_pck',
+                            url: 'ajukan_penilaian_pck',
                             type: 'POST',
                             dataType: 'json',
                             data: {
@@ -2519,7 +2658,7 @@ function postingPCK(penilaian_id) {
                             beforeSend: function () {
                                 Swal.fire({
                                     title: 'Memproses...',
-                                    text: 'Sedang memposting penilaian',
+                                    text: 'Sedang mengajukan penilaian',
                                     allowOutsideClick: false,
                                     didOpen: () => {
                                         Swal.showLoading();
@@ -2620,19 +2759,19 @@ function initMonitoringPenilaian() {
 
 function previewPCK(penilaianId, status) {
     const $btnCetak = $('#btnCetakPCK');
-    const isPosted = String(status) === '1';
+    const isPosted = String(status) === '2';
     if (!isPosted) {
         if (typeof notifikasi === 'function') {
-            notifikasi('Penilaian Capaian Kinerja Pegawai Belum Diposting', 2);
+            notifikasi('Penilaian Capaian Kinerja Pegawai Belum Disetujui Atasan', 2);
         } else if (typeof Swal !== 'undefined') {
             Swal.fire({
                 title: 'Informasi',
-                html: 'Penilaian Capaian Kinerja Pegawai Belum Diposting',
+                html: 'Penilaian Capaian Kinerja Pegawai Belum Disetujui',
                 icon: 'info',
                 confirmButtonText: 'OK'
             });
         } else {
-            alert('Penilaian Capaian Kinerja Pegawai Belum Diposting');
+            alert('Penilaian Capaian Kinerja Pegawai Belum Disetujui');
         }
         return;
     }

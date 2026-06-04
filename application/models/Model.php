@@ -286,14 +286,21 @@ class Model extends CI_Model
 
     public function proses_simpan_uraian_tugas($data)
     {
+        $this->db->trans_start();
         $dataUraian = [
             'capaian_id' => $data['pck_id'],
             'uraian_tugas' => $data['uraian_tugas'],
             'target_kuantitas' => $data['target_kuantitas'],
             'satuan' => $data['satuan'],
             'realisasi_kuantitas' => $data['realisasi_kuantitas'],
+            'realisasi_kualitas' => $data['realisasi_kualitas'],
             'tautan' => $data['tautan']
         ];
+
+        $mutu = $data['realisasi_kualitas'];
+        $target = 100;
+        $nilai = ((int) $target + (int) $mutu) / 2;
+        $dataUraian['nilai'] = $nilai;
 
         if (!$data['uraian_id'] || $data['uraian_id'] == '-1') {
             $dataUraian['created_on'] = date('Y-m-d H:i:s');
@@ -305,7 +312,11 @@ class Model extends CI_Model
             $query = $this->pembaharuan_data('ck_uraian_tugas', $dataUraian, 'id', $data['uraian_id']);
         }
 
-        if ($query == 1) {
+        $queryCapaian = $this->update_rata_rata_pck($data['pck_id']);
+
+        $this->db->trans_complete();
+
+        if ($query == 1 && $queryCapaian == 1) {
             if (!$data['uraian_id'] || $data['uraian_id'] == '-1') {
                 return ['status' => true, 'message' => 'Uraian Tugas Berhasil Disimpan'];
             } else
@@ -778,11 +789,17 @@ class Model extends CI_Model
             $bulanNum = (int) $r->bulan;
             $bulanText = $namaBulan[$bulanNum] ?? (string) $r->bulan;
 
-            $statusBadge = ((string) $r->status === '1')
-                ? '<span class="badge badge-success">Posted</span>'
-                : '<span class="badge badge-warning">Draft</span>';
+            if ((string) $r->status === '1')
+                $statusBadge = '<span class="badge badge-warning">Proses Pengajuan</span>';
+            else if ((string) $r->status === '2')
+                $statusBadge = '<span class="badge badge-success">Disetujui</span>';
+            else
+                $statusBadge = '<span class="badge badge-danger">Draft</span>';
 
-            $nilaiText = ($r->nilai === null || $r->nilai === '') ? '-' : $r->nilai;
+            if ((string) $r->status === '2')
+                $nilaiText = ($r->nilai === null || $r->nilai === '') ? '-' : $r->nilai;
+            else
+                $nilaiText = '-';
             $createdOn = $r->created_on ? date('d/m/Y H:i', strtotime($r->created_on)) : '-';
 
             $aksi = '

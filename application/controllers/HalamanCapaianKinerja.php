@@ -637,6 +637,7 @@ class HalamanCapaianKinerja extends MY_Controller
         $id = $this->encryption->decrypt(base64_decode($this->input->post('id')));
         $indikator = $this->model->get_seleksi_array('ck_capaian_indikator', ['penilaian_id' => $id], ['indikator_id' => 'ASC'])->result();
         $penilaian = $this->model->get_seleksi_array('ck_penilaian', ['id' => $id])->row();
+        $tahun = $this->model->get_seleksi('pk_periode', 'id', $penilaian->periode_id)->row()->tahun;
 
         $data = [];
         foreach ($indikator as $row) {
@@ -670,6 +671,9 @@ class HalamanCapaianKinerja extends MY_Controller
             'data_pck' => $data,
             'penilaian_id' => $this->input->post('id'),
             'status' => $penilaian->status,
+            'bulan' => $penilaian->bulan,
+            'tahun' => $tahun,
+            'nilai' => $penilaian->nilai,
             'data_uraian_tugas' => $data_uraian
         ]);
     }
@@ -786,6 +790,7 @@ class HalamanCapaianKinerja extends MY_Controller
         $satuan = "";
         $realisasi_kuantitas = "";
         $tautan = "";
+        $realisasi_kualitas = "";
 
         $get_capaian_indikator = $this->model->get_seleksi_array('ck_capaian_indikator', ['id' => $pckId])->row();
         $get_indikator = $this->model->get_seleksi_array('pk_indikator_kinerja', ['id' => $get_capaian_indikator->indikator_id])->row();
@@ -800,6 +805,7 @@ class HalamanCapaianKinerja extends MY_Controller
             $satuan = $queryUraianTugas->row()->satuan;
             $realisasi_kuantitas = $queryUraianTugas->row()->realisasi_kuantitas;
             $tautan = $queryUraianTugas->row()->tautan;
+            $realisasi_kualitas = $queryUraianTugas->row()->realisasi_kualitas;
         }
 
         echo json_encode(
@@ -813,7 +819,8 @@ class HalamanCapaianKinerja extends MY_Controller
                 'target_kuantitas' => $target_kuantitas,
                 'satuan' => $satuan,
                 'realisasi_kuantitas' => $realisasi_kuantitas,
-                'tautan' => $tautan
+                'tautan' => $tautan,
+                'realisasi_kualitas' => $realisasi_kualitas
             )
         );
         return;
@@ -827,6 +834,7 @@ class HalamanCapaianKinerja extends MY_Controller
         $this->form_validation->set_rules('satuan', 'Satuan', "required");
         $this->form_validation->set_rules('target_kuantitas', 'Target Kuantitas', "required|numeric");
         $this->form_validation->set_rules('realisasi_kuantitas', 'Realisasi Kuantitas', "required|numeric");
+        $this->form_validation->set_rules('realisasi_kualitas', 'Mutu Hasil Kerja', "required|numeric");
         $this->form_validation->set_rules('tautan', 'Tautan Bukti Dukung', "required");
 
         $this->form_validation->set_message([
@@ -846,6 +854,7 @@ class HalamanCapaianKinerja extends MY_Controller
             'target_kuantitas' => $this->security->xss_clean($this->input->post('target_kuantitas')),
             'satuan' => $this->security->xss_clean($this->input->post('satuan')),
             'realisasi_kuantitas' => $this->security->xss_clean($this->input->post('realisasi_kuantitas')),
+            'realisasi_kualitas' => $this->security->xss_clean($this->input->post('realisasi_kualitas')),
             'tautan' => $this->security->xss_clean($this->input->post('tautan'))
         ];
 
@@ -855,6 +864,7 @@ class HalamanCapaianKinerja extends MY_Controller
 
         $result = $this->model->proses_simpan_uraian_tugas($data);
         if ($result['status']) {
+            /*
             $pck_data = $this->model->get_seleksi(
                 'v_uraian_tugas',
                 'capaian_id',
@@ -871,6 +881,7 @@ class HalamanCapaianKinerja extends MY_Controller
             );
 
             $this->model->kirim_notif($dataNotif);
+            */
             echo json_encode([
                 'success' => 1,
                 'message' => $result['message'],
@@ -1036,7 +1047,7 @@ class HalamanCapaianKinerja extends MY_Controller
         }
     }
 
-    public function posting_penilaian_pck()
+    public function ajukan_penilaian_pck()
     {
         $penilaian_id = $this->security->xss_clean($this->encryption->decrypt(base64_decode($this->input->post('penilaian_id'))));
         $dataPenilaian = [
@@ -1048,14 +1059,71 @@ class HalamanCapaianKinerja extends MY_Controller
 
         $query = $this->model->pembaharuan_data('ck_penilaian', $dataPenilaian, 'id', $penilaian_id);
         if ($query) {
+            $pck_data = $this->model->get_seleksi(
+                'v_uraian_tugas',
+                'penilaian_id',
+                $penilaian_id
+            )->row();
+
+            $dataNotif = array(
+                'jenis_pesan' => 'pck',
+                'id_pemohon' => $this->session->userdata('pegawai_id'),
+                'pesan' => 'Assalamualaikum Wr. Wb. Pegawai atas nama ' . $this->session->userdata('fullname') . ' telah mengajukan penilaian capaian kinerja pegawai, silakan melakukan persetujuan melalui LITERASI MS BANDA ACEH, Terima Kasih',
+                'id_tujuan' => $this->ambil_atasan_pegawai_id($pck_data->jabatan_penilai),
+                'created_by' => $this->session->userdata('fullname'),
+                'created_on' => date('Y-m-d H:i:s')
+            );
+
+            $this->model->kirim_notif($dataNotif);
+
             echo json_encode([
                 'success' => 1,
-                'message' => 'Berhasil Posting Nilai PCK, PCK Anda Sudah Valid'
+                'message' => 'Berhasil Mengajukan Persetujuan Nilai PCK'
             ]);
         } else {
             echo json_encode([
                 'success' => 3,
-                'message' => 'Gagal Posting Nilai PCK, Ulangi atau Hubungi Admin'
+                'message' => 'Gagal Mengajukan Persetujuan Nilai PCK, Ulangi atau Hubungi Admin'
+            ]);
+        }
+    }
+
+    public function validasi_penilaian_pck()
+    {
+        $id = $this->security->xss_clean($this->encryption->decrypt(base64_decode($this->input->post('id'))));
+        $dataPenilaian = [
+            'status' => 2,
+            'modified_by' => $this->session->userdata('pegawai_id'),
+            'modified_on' => date('Y-m-d H:i:s')
+        ];
+
+        $query = $this->model->pembaharuan_data('ck_penilaian', $dataPenilaian, 'id', $id);
+        if ($query) {
+            $penilaian_data = $this->model->get_seleksi(
+                'ck_penilaian',
+                'id',
+                $id
+            )->row();
+
+            $dataNotif = array(
+                'jenis_pesan' => 'pck',
+                'id_pemohon' => $this->session->userdata('pegawai_id'),
+                'pesan' => 'Assalamualaikum Wr. Wb. Penilaian Capaian Kinerja anda bulan ini telah diberikan persetujuan atasan, Terima Kasih',
+                'id_tujuan' => $penilaian_data->created_by,
+                'created_by' => $this->session->userdata('fullname'),
+                'created_on' => date('Y-m-d H:i:s')
+            );
+
+            $this->model->kirim_notif($dataNotif);
+
+            echo json_encode([
+                'success' => 1,
+                'message' => 'Berhasil Memberikan Persetujuan Nilai PCK'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => 3,
+                'message' => 'Gagal Memberikan Persetujuan Nilai PCK, Ulangi atau Hubungi Admin'
             ]);
         }
     }

@@ -32,15 +32,28 @@
                         <select class="form-control" id="staf" name="staf" data-placeholder="-- Pilih pegawai --">
                             <option value="">&nbsp;</option>
                             <?php foreach ($staf as $row):
+                                $status = (int) $row->status;
+                                $status_text = 'Status tidak diketahui';
+                                $badge_class = 'badge-secondary';
+                                if ($status === 0) {
+                                    $status_text = 'Draft';
+                                    $badge_class = 'badge-danger';
+                                } elseif ($status === 1) {
+                                    $status_text = 'Belum persetujuan';
+                                    $badge_class = 'badge-warning text-dark';
+                                } elseif ($status === 2) {
+                                    $status_text = 'Sudah persetujuan';
+                                    $badge_class = 'badge-success';
+                                }
                                 $nama = $row->nama_pegawai;
                                 $jab = $row->jabatan;
-                                $opt_label = htmlspecialchars($nama . ' — ' . $jab, ENT_QUOTES, 'UTF-8');
+                                $opt_label = htmlspecialchars($nama . ' — ' . $status_text, ENT_QUOTES, 'UTF-8');
                                 ?>
                                 <option value="<?= $row->id; ?>"
                                     data-nama="<?= htmlspecialchars($nama, ENT_QUOTES, 'UTF-8'); ?>"
                                     data-jabatan="<?= htmlspecialchars($jab, ENT_QUOTES, 'UTF-8'); ?>"
-                                    data-uraian-sudah="<?= isset($row->uraian_sudah_dinilai) ? (int) $row->uraian_sudah_dinilai : 0; ?>"
-                                    data-uraian-belum="<?= isset($row->uraian_belum_dinilai) ? (int) $row->uraian_belum_dinilai : 0; ?>">
+                                    data-status-text="<?= htmlspecialchars($status_text, ENT_QUOTES, 'UTF-8'); ?>"
+                                    data-badge-class="<?= htmlspecialchars($badge_class, ENT_QUOTES, 'UTF-8'); ?>">
                                     <?= $opt_label; ?>
                                 </option>
                             <?php endforeach; ?>
@@ -55,6 +68,12 @@
                 <p>Anda Tidak Memiliki Staf atau Staf Belum Mengisi Penilaian Capaian Kinerja Bulan Ini.</p>
             </div>
         <?php endif; ?>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div id="dataPCKPegawai"></div>
     </div>
 </div>
 
@@ -156,6 +175,7 @@
     */
     function initEvaluasiPckStafSelect() {
         var $staf = $('#staf');
+        let id;
         if (!$staf.length) {
             return;
         }
@@ -166,25 +186,20 @@
             }
 
             var $opt = $(state.element);
+            id = $opt.attr('data-id');
             var nama = $opt.attr('data-nama') || state.text;
             var jbtn = $opt.attr('data-jabatan') || '';
-            var sudah = parseInt($opt.attr('data-uraian-sudah') || '0', 10);
-            var belum = parseInt($opt.attr('data-uraian-belum') || '0', 10);
+            var stext = $opt.attr('data-status-text') || '';
+            var badgeClass = $opt.attr('data-badge-class') || 'badge-secondary';
 
             var $wrap = $('<div class="select2-staf-option py-1">');
             var $top = $('<div class="d-flex align-items-center justify-content-between flex-wrap">');
             $top.append($('<strong class="mr-2 mb-0">').text(nama));
-            if (jbtn) {
-                $top.append($('<span class="small mr-2" style="max-width:100%">').text(jbtn));
-            }
+            $top.append($('<span class="badge ' + badgeClass + ' badge-pill mb-0">').text(stext));
             $wrap.append($top);
-
-            var $meta = $('<div class="d-flex align-items-center flex-wrap mt-1">');
-
-            $meta.append($('<span class="badge badge-success border mr-1" style="font-size:0.72rem;">').text('Dinilai: ' + sudah));
-            $meta.append($('<span class="badge badge-danger border" style="font-size:0.72rem;">').text('Belum: ' + belum));
-            $wrap.append($meta);
-
+            if (jbtn) {
+                $wrap.append($('<div class="small mt-1 text-truncate" style="max-width:100%">').text(jbtn));
+            }
             return $wrap;
         }
 
@@ -194,13 +209,12 @@
             }
             var $opt = $(state.element);
             var nama = $opt.attr('data-nama') || state.text;
-            var sudah = parseInt($opt.attr('data-uraian-sudah') || '0', 10);
-            var belum = parseInt($opt.attr('data-uraian-belum') || '0', 10);
+            var stext = $opt.attr('data-status-text') || '';
+            var badgeClass = $opt.attr('data-badge-class') || 'badge-secondary';
 
             var $row = $('<span class="d-inline-flex align-items-center flex-wrap">');
             $row.append($('<span class="mr-2">').text(nama));
-            $row.append($('<span class="badge badge-success border mr-1" style="font-size:0.72rem;">').text('Dinilai: ' + sudah));
-            $row.append($('<span class="badge badge-danger border" style="font-size:0.72rem;">').text('Belum: ' + belum));
+            $row.append($('<span class="badge ' + badgeClass + ' badge-pill" style="font-size:0.72rem;">').text(stext));
             return $row;
         }
 
@@ -219,7 +233,7 @@
         $staf.off('change.validasiPk');
         $staf.on('change.validasiPk', function () {
             if (typeof loadDetailPCKStaf === 'function') {
-                loadDetailPCKStaf(document.getElementById('staf').value);
+                loadDetailPCKStaf(document.getElementById('staf').value, '<?= $id ?>');
             }
         });
     }

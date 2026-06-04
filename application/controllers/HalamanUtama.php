@@ -98,6 +98,7 @@ class HalamanUtama extends MY_Controller
                     ])->result();
 
                     $data['periode_id'] = $tahun;
+                    $data['id'] = $this->input->get('id');
 
                 } else {
                     $id = $this->encryption->decrypt(base64_decode($this->input->get('id')));
@@ -112,6 +113,7 @@ class HalamanUtama extends MY_Controller
                     ])->result();
 
                     $data['periode_id'] = base64_encode($this->encryption->encrypt($data_penilaian->row()->periode_id));
+                    $data['id'] = $this->input->get('id');
                 }
 
                 // Tambahkan statistik uraian tugas dinilai/belum dinilai per penilaian staf
