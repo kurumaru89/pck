@@ -176,7 +176,7 @@ class HalamanCapaianKinerja extends MY_Controller
                 ];
             }
         } else {
-            $query = $this->model->get_seleksi_array('pk_periode', ['created_by' => $this->session->userdata('pegawai_id')], ['status' => 'DESC'])->result();
+            $query = $this->model->get_seleksi_array('pk_periode', ['created_by' => $this->session->userdata('pegawai_id')], ['id' => 'DESC'])->result();
             foreach ($query as $row) {
                 $data[] = [
                     'id' => base64_encode($this->encryption->encrypt($row->id)),
@@ -252,7 +252,7 @@ class HalamanCapaianKinerja extends MY_Controller
         }
 
         $data = [
-            'id' => $this->security->xss_clean($this->encryption->decrypt(base64_decode($this->input->post('id')))),
+            'id' => $this->security->xss_clean($this->encryption->decrypt(base64_decode($this->input->post('periode_id')))),
             'nama_periode' => $this->security->xss_clean($this->input->post('nama_periode')),
             'tahun' => $this->security->xss_clean($this->input->post('tahun')),
             'periode_awal' => $this->security->xss_clean($this->input->post('periode_awal')),
@@ -319,7 +319,9 @@ class HalamanCapaianKinerja extends MY_Controller
             'data_sasaran' => $data,
             'status' => $periode->status,
             'get_sasaran_jabatan' => $get_sasaran_jabatan,
-            'indikator' => $indikator
+            'indikator' => $indikator,
+            'jabatan_id' => $periode->id_jabatan_pegawai,
+            'jabatan_id_sekarang' => $this->session->userdata('jab_id')
         ]);
     }
 
@@ -593,10 +595,8 @@ class HalamanCapaianKinerja extends MY_Controller
             return;
         }
 
-        $periode = $this->model->get_seleksi_array('pk_periode', ['id' => $periode_id])->row();
-        $bulan_awal = date('n', strtotime($periode->periode_awal));
-        $bulan_akhir = date('n', strtotime($periode->periode_akhir));
-        if ($bulan <= $bulan_awal && $bulan >= $bulan_akhir) {
+        $periode = $this->model->get_bulan_dalam_periode_penilaian($periode_id, $bulan);
+        if (!$periode) {
             $response = array(
                 'success' => false,
                 'message' => 'Bulan penilaian tidak termasuk dalam rentang periode perjanjian kinerja yang ditetapkan'
@@ -637,7 +637,8 @@ class HalamanCapaianKinerja extends MY_Controller
         $id = $this->encryption->decrypt(base64_decode($this->input->post('id')));
         $indikator = $this->model->get_seleksi_array('ck_capaian_indikator', ['penilaian_id' => $id], ['indikator_id' => 'ASC'])->result();
         $penilaian = $this->model->get_seleksi_array('ck_penilaian', ['id' => $id])->row();
-        $tahun = $this->model->get_seleksi('pk_periode', 'id', $penilaian->periode_id)->row()->tahun;
+        $periode = $this->model->get_seleksi('pk_periode', 'id', $penilaian->periode_id)->row();
+        $tahun = $periode->tahun;
 
         $data = [];
         foreach ($indikator as $row) {
@@ -674,7 +675,9 @@ class HalamanCapaianKinerja extends MY_Controller
             'bulan' => $penilaian->bulan,
             'tahun' => $tahun,
             'nilai' => $penilaian->nilai,
-            'data_uraian_tugas' => $data_uraian
+            'data_uraian_tugas' => $data_uraian,
+            'id_jabatan_pegawai' => $periode->id_jabatan_pegawai,
+            'id_jabatan_sekarang' => $this->session->userdata('jab_id')
         ]);
     }
 
@@ -778,6 +781,93 @@ class HalamanCapaianKinerja extends MY_Controller
         }
 
         echo json_encode($response);
+    }
+
+    public function ambil_detail_pk_periode_sebelumnya()
+    {
+        $periode_id = $this->encryption->decrypt(base64_decode($this->input->post('periode_id')));
+        $pegawai_id = $this->session->userdata('pegawai_id');
+        $periode = $this->model->get_seleksi_array('pk_periode', ['created_by' => $pegawai_id], ['id' => 'DESC'])->result();
+        $jabatan_pertama = $periode[0]->id_jabatan_pegawai;
+        $jabatan_kedua = $periode[1]->id_jabatan_pegawai;
+
+        if ($jabatan_pertama != $jabatan_kedua) {
+            $response = array(
+                'success' => 3,
+                'message' => 'Jabatan Periode ini tidak sama dengan Jabatan Periode Sebelumnya'
+            );
+            echo json_encode($response);
+            return;
+        }
+
+        $data_periode = $this->model->get_seleksi_array('pk_periode', ['id' => $periode_id]);
+        if ($data_periode->num_rows() > 0) {
+            $result = $this->model->salin_pk_periode_sebelumnya($data_periode);
+
+            if ($result && $result['success']) {
+                $response = array(
+                    'success' => 1,
+                    'message' => $result['message'],
+                    'jumlah_sasaran' => $result['jumlah_sasaran'],
+                    'jumlah_indikator' => $result['jumlah_indikator']
+                );
+            } else {
+                $response = array(
+                    'success' => 3,
+                    'message' => isset($result['message']) ? $result['message'] : 'Gagal menyalin Perjanjian Kinerja dari periode sebelumnya. Silakan coba lagi atau hubungi administrator.'
+                );
+            }
+            echo json_encode($response);
+            return;
+        } else {
+            $response = array(
+                'success' => 3,
+                'message' => 'Periode tidak ditemukan'
+            );
+            echo json_encode($response);
+            return;
+        }
+    }
+
+    public function ambil_pck_periode_sebelumnya()
+    {
+        $penilaian_id = $this->encryption->decrypt(base64_decode($this->input->post('id')));
+        #die(var_dump($penilaian_id));
+        $pegawai_id = $this->session->userdata('pegawai_id');
+        $data_penilaian = $this->model->get_seleksi_array(
+            'ck_penilaian',
+            ['id' => $penilaian_id]
+        );
+
+        if ($data_penilaian->row()->bulan == '1') {
+            $response = array(
+                'success' => 3,
+                'message' => 'Anda berada di awal periode Perjanjian Kinerja, tidak bisa menyalin PCK dari periode Perjanjian Kinerja sebelumnya'
+            );
+            echo json_encode($response);
+            return;
+        }
+
+        $periode_id = $data_penilaian->row()->periode_id;
+        $bulan_sebelumnya = (int) $data_penilaian->row()->bulan - 1;
+        $cek_pck_sebelumnya = $this->model->get_seleksi_array('ck_penilaian', [
+            'periode_id' => $data_penilaian->row()->periode_id,
+            'bulan' => $bulan_sebelumnya,
+            'created_by' => $this->session->userdata('pegawai_id')
+        ]);
+
+        if ($cek_pck_sebelumnya->num_rows() == 0) {
+            $response = array(
+                'success' => 3,
+                'message' => 'Anda belum/tidak membuat PCK pada periode bulan sebelumnya, tidak ada yang bisa disalin.'
+            );
+            echo json_encode($response);
+            return;
+        }
+
+        $result = $this->model->salin_pck_dari_bulan_sebelumnya($periode_id, $penilaian_id, $data_penilaian->row()->bulan, $pegawai_id);
+        echo json_encode($result);
+        return;
     }
 
     public function show_uraian_tugas()

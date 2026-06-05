@@ -182,21 +182,6 @@ class Model extends CI_Model
             'periode_akhir' => $data['periode_akhir']
         ];
 
-        $cek_range_tahun = $this->check_tahun_exists_in_range(
-            $this->session->userdata('pegawai_id'),
-            $data['tahun'],
-            $data['periode_awal'],
-            $data['periode_akhir'],
-            $data['id']
-        );
-
-        if ($cek_range_tahun) {
-            return [
-                'status' => false,
-                'message' => 'Periode penilaian dengan tahun ' . $data['tahun'] . ' yang berada dalam rentang tanggal tersebut sudah ada. Silakan pilih tahun atau rentang periode lain, atau edit periode yang sudah ada.'
-            ];
-        }
-
         if (!$this->session->userdata('id_jabatan_atasan')) {
             return [
                 'status' => false,
@@ -205,6 +190,21 @@ class Model extends CI_Model
         }
 
         if (!$data['id'] || $data['id'] == '-1') {
+            $cek_range_tahun = $this->check_tahun_exists_in_range(
+                $this->session->userdata('pegawai_id'),
+                $data['tahun'],
+                $data['periode_awal'],
+                $data['periode_akhir'],
+                $data['id']
+            );
+
+            if ($cek_range_tahun) {
+                return [
+                    'status' => false,
+                    'message' => 'Periode penilaian dengan tahun ' . $data['tahun'] . ' yang berada dalam rentang tanggal tersebut sudah ada. Silakan pilih tahun atau rentang periode lain, atau edit periode yang sudah ada.'
+                ];
+            }
+
             $dataPeserta['nama_pegawai'] = $this->session->userdata('fullname');
             $dataPeserta['id_jabatan_pegawai'] = $this->session->userdata('jab_id');
             $dataPeserta['jabatan_pegawai'] = $this->session->userdata('jabatan');
@@ -608,6 +608,284 @@ class Model extends CI_Model
                 'success' => 3,
                 'message' => 'Gagal menyalin Sasaran Kegiatan Jabatan: ' . $e->getMessage()
             );
+        }
+    }
+
+    public function salin_pk_periode_sebelumnya($data)
+    {
+        $tahun = $data->row()->tahun;
+        $pegawai_id = $this->session->userdata('pegawai_id');
+        $created_by = $data->row()->created_by;
+
+        $periode_sebelumnya = $this->get_periode_tahun_sebelumnya($pegawai_id, $tahun);
+
+        if (!$periode_sebelumnya) {
+            return array(
+                'success' => 3,
+                'message' => 'Tidak ditemukan Perjanjian Kinerja periode sebelumnya.'
+            );
+        }
+
+        $this->db->trans_start();
+        try {
+            // 1. Ambil semua Sasaran Kegiatan dari periode tahun sebelumnya
+            $this->db->select('*');
+            $this->db->from('pk_sasaran_kinerja');
+            $this->db->where('periode_id', $periode_sebelumnya->id);
+            $this->db->where('hapus', 0);
+            $sasaran_lama = $this->db->get()->result();
+
+            // Mapping untuk menyimpan relasi sasaran_id lama -> sasaran_id baru
+            $sasaran_id_mapping = array();
+            $jumlah_sasaran = 0;
+            $jumlah_indikator = 0;
+
+            // Jika created_by tidak diberikan, gunakan pegawai_id sebagai fallback
+            if (!$created_by) {
+                $created_by = $pegawai_id;
+            }
+
+            // 2. Copy setiap Sasaran Kegiatan ke periode saat ini
+            foreach ($sasaran_lama as $sasaran) {
+                $data_sasaran_baru = array(
+                    'periode_id' => $data->row()->id,
+                    'jabatan_id' => isset($sasaran->jabatan_id) ? $sasaran->jabatan_id : null,
+                    'nama_sasaran' => $sasaran->nama_sasaran,
+                    'created_by' => $created_by,
+                    'created_on' => date('Y-m-d H:i:s')
+                );
+
+                $this->db->insert('pk_sasaran_kinerja', $data_sasaran_baru);
+                $sasaran_id_baru = $this->db->insert_id();
+
+                if (!$sasaran_id_baru) {
+                    throw new Exception('Gagal menyalin Sasaran Kegiatan: ' . $sasaran->nama_sasaran);
+                }
+
+                // Simpan mapping rhk_id lama -> rhk_id baru
+                $sasaran_id_mapping[$sasaran->id] = $sasaran_id_baru;
+                $jumlah_sasaran++;
+            }
+
+            // 3. Copy semua Indikator dari periode tahun sebelumnya berdasarkan Sasaran Kegiatan yang sudah di-copy
+            if (!empty($sasaran_id_mapping)) {
+                // Ambil semua IKI dari periode tahun sebelumnya
+                $this->db->select('*');
+                $this->db->from('pk_indikator_kinerja');
+                $this->db->where('sasaran_id IN (' . implode(',', array_keys($sasaran_id_mapping)) . ')');
+                $this->db->where('hapus', 0);
+                $indikator_lama = $this->db->get()->result();
+
+                // Copy setiap indikator ke periode saat ini dengan sasaran_id yang baru
+                foreach ($indikator_lama as $indikator) {
+                    // Cek apakah sasaran_id lama ada di mapping (artinya Sasaran Kegiatan-nya sudah di-copy)
+                    if (isset($sasaran_id_mapping[$indikator->sasaran_id])) {
+                        $data_indikator_baru = array(
+                            'sasaran_id' => $sasaran_id_mapping[$indikator->sasaran_id], // Gunakan sasaran_id baru
+                            'nama_indikator' => $indikator->nama_indikator,
+                            'target_mutu' => $indikator->target_mutu,
+                            'target_kuantitas' => $indikator->target_kuantitas,
+                            'satuan' => $indikator->satuan,
+                            'bulan_penyelesaian' => $indikator->bulan_penyelesaian,
+                            'anggaran' => $indikator->anggaran,
+                            'created_by' => $created_by,
+                            'created_on' => date('Y-m-d H:i:s')
+                        );
+
+                        $this->db->insert('pk_indikator_kinerja', $data_indikator_baru);
+                        $indikator_id_baru = $this->db->insert_id();
+
+                        if (!$indikator_id_baru) {
+                            throw new Exception('Gagal menyalin IKI: ' . $indikator->nama_indikator);
+                        }
+
+                        $jumlah_indikator++;
+                    }
+                }
+            }
+
+            // Selesaikan transaction
+            $this->db->trans_complete();
+
+            if ($this->db->trans_status() === FALSE) {
+                throw new Exception('Transaction failed');
+            }
+
+            // Return array dengan informasi lengkap
+            return array(
+                'success' => true,
+                'jumlah_sasaran' => $jumlah_sasaran,
+                'jumlah_indikator' => $jumlah_indikator,
+                'message' => 'Berhasil menyalin ' . $jumlah_sasaran . ' Sasaran Kegiatan dan ' . $jumlah_indikator . ' Indikator Kinerja dari periode tahun sebelumnya'
+            );
+
+        } catch (Exception $e) {
+            // Rollback transaction jika ada error
+            $this->db->trans_rollback();
+            return array(
+                'success' => false,
+                'message' => 'Gagal menyalin Perjanjian Kinerja periode lalu: ' . $e->getMessage()
+            );
+        }
+    }
+
+    public function get_periode_tahun_sebelumnya($pegawai_id, $tahun_sekarang)
+    {
+        $tahun_sebelumnya = $tahun_sekarang - 1;
+
+        $this->db->select('*');
+        $this->db->from('pk_periode');
+        $this->db->where('created_by', $pegawai_id);
+        $this->db->where('tahun', $tahun_sebelumnya);
+        $this->db->where('hapus', 0);
+        $this->db->order_by('tahun', 'DESC');
+        $this->db->limit(1);
+
+        return $this->db->get()->row();
+    }
+
+    public function salin_pck_dari_bulan_sebelumnya($periode_id_sekarang, $penilaian_id_sekarang, $bulan_sekarang, $pegawai_id)
+    {
+        // Validasi ownership
+        if (!$this->penilaian_belongs_to_pegawai($penilaian_id_sekarang, $pegawai_id)) {
+            return [
+                'success' => false,
+                'message' => 'Anda tidak memiliki akses untuk melakukan aksi ini.'
+            ];
+        }
+
+        $bulan_sekarang = (int) $bulan_sekarang;
+        $prev_bulan = ($bulan_sekarang <= 1) ? 12 : ($bulan_sekarang - 1);
+        $periode_id = (int) $periode_id_sekarang;
+
+        $penilaian_prev_id = $this->get_penilaian_id_safe($periode_id, $prev_bulan);
+        if (!$penilaian_prev_id) {
+            return [
+                'success' => false,
+                'message' => 'Periode sebelumnya tidak ada / belum dibuat.'
+            ];
+        }
+
+        // Ambil Indikator yang sudah dipilih (PCK) pada periode sebelumnya, beserta id PCK untuk copy uraian_tugas
+        $this->db->select('pck.id AS pck_id, pck.indikator_id');
+        $this->db->from('ck_capaian_indikator pck');
+        $this->db->where('pck.penilaian_id', $penilaian_prev_id);
+        $this->db->where('pck.hapus', 0, false);
+        $prev_rows = $this->db->get()->result();
+
+        if (!$prev_rows || count($prev_rows) === 0) {
+            return [
+                'success' => false,
+                'message' => 'Tidak ada IKI pada periode sebelumnya / belum melakukan pengisian.'
+            ];
+        }
+
+        // Indikator yang sudah ada pada periode sekarang
+        $this->db->select('indikator_id');
+        $this->db->from('ck_capaian_indikator');
+        $this->db->where('penilaian_id', $penilaian_id_sekarang);
+        $this->db->where('hapus', 0, false);
+        $existing_rows = $this->db->get()->result();
+        $existing = [];
+        foreach ($existing_rows as $er) {
+            $existing[(int) $er->indikator_id] = true;
+        }
+
+        $copied = 0;
+        $skipped = 0;
+        $uraian_copied = 0;
+
+        $this->db->trans_start();
+        foreach ($prev_rows as $r) {
+            $indikator_id = (int) $r->indikator_id;
+            $old_pck_id = (int) $r->pck_id;
+            if (!$indikator_id) {
+                continue;
+            }
+            if (isset($existing[$indikator_id])) {
+                $skipped++;
+                continue;
+            }
+
+            $ok = $this->db->insert('ck_capaian_indikator', [
+                'indikator_id' => $indikator_id,
+                'penilaian_id' => $penilaian_id_sekarang,
+                'created_by' => $pegawai_id,
+                'created_on' => date('Y-m-d H:i:s'),
+            ]);
+
+            if ($ok) {
+                $new_pck_id = $this->db->insert_id();
+                $copied++;
+
+                // Copy uraian_tugas dari PCK periode sebelumnya (termasuk target, realisasi, nilai)
+                $uraian_list = $this->get_seleksi_array('ck_uraian_tugas', ['capaian_id' => $old_pck_id])->result();
+                if ($uraian_list) {
+                    foreach ($uraian_list as $u) {
+                        $uraian_data = [
+                            'capaian_id' => $new_pck_id,
+                            'uraian_tugas' => $u->uraian_tugas,
+                            'satuan' => isset($u->satuan) ? $u->satuan : null,
+                            'target_kuantitas' => isset($u->target_kuantitas) ? $u->target_kuantitas : null,
+                            'target_kualitas' => isset($u->target_kualitas) ? $u->target_kualitas : null,
+                            'realisasi_kuantitas' => isset($u->realisasi_kuantitas) ? $u->realisasi_kuantitas : null,
+                            'realisasi_kualitas' => isset($u->realisasi_kualitas) ? $u->realisasi_kualitas : null,
+                            'nilai' => isset($u->nilai) ? $u->nilai : null,
+                            'created_by' => $pegawai_id,
+                            'created_on' => date('Y-m-d H:i:s'),
+                        ];
+
+                        if ($this->create_uraian_tugas_pck($uraian_data)) {
+                            $uraian_copied++;
+                        }
+                    }
+                }
+            }
+        }
+        $this->db->trans_complete();
+
+        if (!$this->db->trans_status()) {
+            return [
+                'success' => 3,
+                'message' => 'Gagal mengambil IKI dari periode sebelumnya. Silakan coba lagi.'
+            ];
+        }
+
+        if ($copied === 0) {
+            return [
+                'success' => 2,
+                'message' => 'IKI periode sebelumnya sudah ada semua pada periode ini (tidak ada yang disalin).'
+            ];
+        }
+
+        $msg = 'Berhasil mengambil ' . $copied . ' Indikator dari periode sebelumnya.';
+        if ($uraian_copied > 0) {
+            $msg .= ' Sebanyak ' . $uraian_copied . ' uraian tugas (termasuk target, realisasi, nilai) turut disalin.';
+        }
+
+        return [
+            'success' => 1,
+            'message' => $msg,
+            'copied' => $copied,
+            'uraian_copied' => $uraian_copied,
+            'skipped' => $skipped,
+            'prev_bulan' => $prev_bulan,
+            'prev_periode_id' => $periode_id,
+        ];
+    }
+
+    public function create_uraian_tugas_pck($data)
+    {
+        try {
+            $this->db->trans_start();
+            $capaian_id = $data['capaian_id'];
+
+            $this->db->insert('ck_uraian_tugas', $data);
+            $this->update_rata_rata_pck($capaian_id);
+            $this->db->trans_complete();
+            return 1;
+        } catch (Exception $e) {
+            return 0;
         }
     }
 
@@ -1208,5 +1486,40 @@ class Model extends CI_Model
 
         $query = $this->db->get();
         return $query->num_rows() > 0;
+    }
+
+    public function get_bulan_dalam_periode_penilaian($periode_id, $bulan)
+    {
+        $this->db->select('*');
+        $this->db->from('pk_periode');
+        $this->db->where('id', $periode_id);
+        $this->db->where('hapus', 0);
+        $this->db->where('MONTH(periode_awal) <=', (int) $bulan);
+        $this->db->where('MONTH(periode_akhir) >=', (int) $bulan);
+
+        return $this->db->get()->row();
+    }
+
+    private function penilaian_belongs_to_pegawai($penilaian_id, $pegawai_id)
+    {
+        $this->db->select('p.id');
+        $this->db->from('ck_penilaian p');
+        $this->db->join('pk_periode pe', 'p.periode_id = pe.id', 'left');
+        $this->db->where('p.id', $penilaian_id);
+        $this->db->where('pe.created_by', $pegawai_id);
+        $this->db->where('p.hapus', 0, false);
+        $row = $this->db->get()->row();
+        return (bool) $row;
+    }
+
+    private function get_penilaian_id_safe($periode_id, $bulan)
+    {
+        $this->db->select('id');
+        $this->db->from('ck_penilaian');
+        $this->db->where('periode_id', $periode_id);
+        $this->db->where('bulan', $bulan);
+        $this->db->where('hapus', 0, false);
+        $row = $this->db->get()->row();
+        return $row ? (int) $row->id : null;
     }
 }

@@ -19,7 +19,7 @@
             <div class="btn-group btn-group-sm btn-group-rounded mb-15 mr-15" role="group">
                 <button type="button" data-page="pck" class="btn btn-secondary"><i class="zmdi zmdi-arrow-left"></i>
                     Kembali</button>
-                <?php if (!$this->session->userdata('ketua')) { ?>
+                <?php if (!$this->session->userdata('ketua') && $id_jabatan_pegawai == $id_jabatan_sekarang) { ?>
                     <button type="button" class="btn btn-primary" onclick="modalPeriodePenilaian('<?= $id_param ?>')"><i
                             class="zmdi zmdi-calendar-alt"></i> Tambah Periode Penilaian</button>
                 <?php } ?>
@@ -40,11 +40,13 @@
                             </a>
                         </li>
                     <?php endif; ?>
+                    <?php if ($struktural && $id_jabatan_pegawai == $id_jabatan_sekarang): ?>
                     <li class="nav-item">
                         <a class="nav-link" id="evaluasi-tab" data-toggle="tab" href="#evaluasi" role="tab"
                             aria-controls="evaluasi" aria-selected="false">Evaluasi Kinerja Bawahan
                         </a>
                     </li>
+                    <?php endif; ?>
                 </ul>
             </div>
             <div class="card-body">

@@ -70,15 +70,7 @@
                                 </tr>
                                 <tr>
                                     <th class="pl-0 text-muted">Status</th>
-                                    <td>
-                                        <?php if ($periode->status == 0): ?>
-                                            <span class="badge badge-danger">Draft</span>
-                                        <?php elseif ($periode->status == 1): ?>
-                                            <span class="badge badge-warning">Pengajuan</span>
-                                        <?php elseif ($periode->status == 2): ?>
-                                            <span class="badge badge-success">Persetujuan</span>
-                                        <?php endif; ?>
-                                    </td>
+                                    <td id="status_validasi"></td>
                                 </tr>
                             </table>
                         </div>
@@ -91,21 +83,7 @@
 
 <div class="row">
     <div class="col">
-        <?php if ($periode->status == 0) {
-            $class_status = 'danger';
-            $pesan = 'Penilaian Kinerja Anda Belum Disetujui Atasan, Silakan Ajukan Persetujuan';
-        } elseif ($periode->status == 1) {
-            $class_status = 'warning';
-            $pesan = 'Penilaian Kinerja Anda Sudah Diajukan, Sedang Proses Telaah Atasan';
-        } else {
-            $class_status = 'success';
-            $pesan = 'Penilaian Kinerja Anda Sudah Disetujui';
-        }
-        ?>
-        <!-- Page Alerts -->
-        <div class="alert alert-<?= $class_status ?> alert-wth-icon alert-dismissible fade show" role="alert">
-            <span class="alert-icon-wrap"><i class="zmdi zmdi-help"></i></span> <?= $pesan ?>
-        </div>
+        <div id="status_alert"></div>
         <!-- /Page Alerts -->
 
         <div id="tabelDetailPK">

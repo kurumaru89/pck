@@ -645,7 +645,7 @@ function loadTabelPeriodePK() {
                     }
 
                     let tombolValidasi = ``;
-                    if (row.struktural) {
+                    if (row.struktural && row.id_jabatan_pegawai == row.jabatan_pegawai_sekarang) {
                         tombolValidasi = `
                             <button type="button" class="btn btn-outline-primary mr-1 mb-1" data-page="validasi_pk" data-id="${row.id}">
                                 <i class="zmdi zmdi-view-list mr-1"></i> PK Bawahan
@@ -725,10 +725,35 @@ function loadTabelDetailPK(id) {
         try {
             const json = JSON.parse(response); // Pastikan server kirim JSON valid
 
+            $('#status_validasi').html('');
+            $('#status_alert').html('');
+            let class_status;
+            let pesan;
             $('#tabelDetailPK').html(''); // kosongkan skeleton, ganti dengan data
 
-            let tombolKepala = ``;
             if (json.status == 0) {
+                $('#status_validasi').html('<span class="badge badge-danger">Draft</span>');
+                class_status = 'danger';
+                pesan = 'Perjanjian Kinerja Anda Belum Disetujui Atasan, Silakan Ajukan Persetujuan';
+            } else if (json.status == 1) {
+                $('#status_validasi').html('<span class="badge badge-warning">Pengajuan</span>');
+                class_status = 'warning';
+                pesan = 'Perjanjian Kinerja Anda Sudah Diajukan, Sedang Proses Telaah Atasan';
+            } else {
+                $('#status_validasi').html('<span class="badge badge-success">Persetujuan</span>');
+                class_status = 'success';
+                pesan = 'Perjanjian Kinerja Anda Sudah Disetujui';
+            }
+
+            $('#status_alert').html(`
+                <div class="alert alert-${class_status} alert-wth-icon alert-dismissible fade show" role="alert">
+                    <span class="alert-icon-wrap"><i class="zmdi zmdi-help"></i></span>
+                    ${pesan}
+                    </div>
+                `);
+
+            let tombolKepala = ``;
+            if (json.status == 0 && json.jabatan_id == json.jabatan_id_sekarang) {
                 tombolKepala = `
                     <button type="button" class="btn btn-sm btn-warning mr-2" onclick="pengajuanPK('${id}')"
                         data-toggle="tooltip-primary" data-placement="top" data-original-title="Pengajuan Atasan">
@@ -738,16 +763,16 @@ function loadTabelDetailPK(id) {
                         data-toggle="tooltip" data-placement="top" data-original-title="Tambah Sasaran">
                     <i class="zmdi zmdi-plus-circle"></i>
                     </button>
-                `
-            }
-
-            if (!json.data_sasaran || json.data_sasaran.length === 0) {
-                tombolKepala += `
-                    <button type="button" class="btn btn-primary btn-sm" onclick="generatePeriodeBaru()"
-                        data-toggle="tooltip" data-placement="top" data-original-title="Salin PK Sebelumnya">
-                        <i class="zmdi zmdi-copy"></i>
-                    </button>
                 `;
+
+                if (!json.data_sasaran || json.data_sasaran.length === 0) {
+                    tombolKepala += `
+                        <button type="button" class="btn btn-primary btn-sm" onclick="ambilPKPeriodeSebelumnya('${id}')"
+                            data-toggle="tooltip" data-placement="top" data-original-title="Salin PK Sebelumnya">
+                            <i class="zmdi zmdi-copy"></i>
+                        </button>
+                    `;
+                }
             }
 
             // Kalau ada data, buat tabelnya
@@ -973,7 +998,7 @@ function loadTabelDetailPCK(id) {
                     </div>
                 `);
             let tombolKepala = ``;
-            if (json.status == 0) {
+            if (json.status == 0 && json.id_jabatan_pegawai == json.id_jabatan_sekarang) {
                 tombolKepala = `
                     <button type="button" class="btn btn-success mr-2" onclick="approvalAtasan('${id}')" 
                         data-toggle="tooltip-primary" data-placement="top" data-original-title="Ajukan Persetujuan Atasan">
@@ -983,7 +1008,16 @@ function loadTabelDetailPCK(id) {
                         data-toggle="tooltip" data-placement="top" data-original-title="Tambah Indikator">
                     <i class="zmdi zmdi-plus-circle"></i> 
                     </button>
-                `
+                `;
+
+                if (!json.data_pck || json.data_pck.length === 0) {
+                    tombolKepala += `
+                        <button type="button" class="btn btn-warning mr-2" onclick="ambilPCKPeriodeLalu('${id}')" 
+                            data-toggle="tooltip" data-placement="top" data-original-title="Ambil Penilaian Bulan Lalu">
+                        <i class="zmdi zmdi-refresh"></i>
+                        </button>
+                    `;
+                }
             }
 
             // Kalau ada data, buat tabelnya
@@ -1416,6 +1450,105 @@ function ambilSasaranJabatan(id) {
     });
 }
 
+function ambilPKPeriodeSebelumnya(id) {
+    Swal.fire({
+        title: 'Ambil Detail Perjanjian Kinerja',
+        text: 'Apakah Anda ingin mengambil Detail Perjanjian Kinerja dari Periode Sebelumnya?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Ambil Detail Perjanjian Kinerja',
+        cancelButtonText: 'Tidak'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Panggil fungsi yang SUDAH ADA
+            $.ajax({
+                url: "ambil_detail_pk_periode_sebelumnya",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    periode_id: id
+                },
+                beforeSend: function () {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: 'Memproses...',
+                            text: 'Sedang menyalin Perjanjian Kinerja Periode Sebelumnya',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                    }
+                },
+                success: function (res) {
+                    Swal.close();
+                    notifikasi(res.message, res.success);
+                    loadTabelDetailPK(id);
+                },
+                error: function (xhr) {
+                    Swal.close();
+                    var errorMsg = 'Terjadi kesalahan saat proses generate.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg += xhr.responseJSON.message;
+                    }
+
+                    notifikasi(errorMsg, 4);
+                }
+            });
+        }
+    });
+}
+
+function ambilPCKPeriodeLalu(id) {
+    Swal.fire({
+        title: 'Ambil Penilaian Capaian Kinerja Bulan Lalu',
+        text: 'PCK dari periode sebelumnya akan disalin ke periode bulan ini (tanpa menghapus data yang sudah ada). Lanjutkan?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Ambil',
+        cancelButtonText: 'Tidak'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Panggil fungsi yang SUDAH ADA
+            $.ajax({
+                url: "ambil_pck_periode_sebelumnya",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    id: id
+                },
+                beforeSend: function () {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: 'Memproses...',
+                            text: 'Sedang menyalin Sasaran Kegiatan Jabatan dari periode ini',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                    }
+                },
+                success: function (res) {
+                    notifikasi(res.message, res.success);
+                    loadTabelDetailPCK(id);
+                },
+                error: function (xhr) {
+                    var errorMsg = 'Terjadi kesalahan saat proses generate.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg += xhr.responseJSON.message;
+                    }
+
+                    notifikasi(errorMsg, 4);
+                },
+                complete: function () {
+                    Swal.close();
+                }
+            });
+        }
+    });
+}
+
 function formPeriodePK(id) {
     $("#periode_id").val('');
     $("#modalPeriodeJudul").html('');
@@ -1423,6 +1556,8 @@ function formPeriodePK(id) {
     $("#nama_periode").val('');
     $("#periode_awal").val('');
     $("#periode_akhir").val('');
+    $("#periode_awal_val").val('');
+    $("#periode_akhir_val").val('');
 
     $.post('show_periode', {
         id: id
@@ -1435,6 +1570,8 @@ function formPeriodePK(id) {
             $("#nama_periode").val(json.nama_periode);
             $("#periode_awal").val(json.periode_awal);
             $("#periode_akhir").val(json.periode_akhir);
+            $("#periode_awal_val").val(json.periode_awal);
+            $("#periode_akhir_val").val(json.periode_akhir);
 
             initFloatingLabel('#nama_periode');
             initFloatingLabel('#periode_akhir');
@@ -2749,6 +2886,36 @@ function initMonitoringPenilaian() {
             // Hide skeleton & show table
             $('#monitoring-table-wrap .monitoring-table-skeleton').addClass('hidden');
             $('#tabelMonitoringPenilaian').show();
+
+            // Debounce global search input agar request tidak terkirim setiap ketukan huruf
+            const $searchInput = $('#tabelMonitoringPenilaian_filter input');
+            let searchTimer = null;
+
+            // Unbind handler default DataTables (yang langsung reload setiap ketukan)
+            $searchInput.off('keyup.DT search.DT input.DT paste.DT cut.DT');
+
+            $searchInput.on('keyup', function (e) {
+                const value = this.value;
+                clearTimeout(searchTimer);
+
+                // Enter = langsung cari
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    table.search(value).draw();
+                    return;
+                }
+
+                // Escape = clear
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    this.value = '';
+                    table.search('').draw();
+                    return;
+                }
+
+                // Debounce 400ms setelah user berhenti mengetik
+                searchTimer = setTimeout(function () {
+                    table.search(value).draw();
+                }, 400);
+            });
         }
     });
 

@@ -22,6 +22,7 @@ $route['show_sasaran'] = 'HalamanCapaianKinerja/show_sasaran';
 $route['simpan_sasaran'] = 'HalamanCapaianKinerja/simpan_sasaran';
 $route['hapus_sasaran'] = 'HalamanCapaianKinerja/hapus_sasaran';
 $route['ambil_sasaran_jabatan_periode_ini'] = 'HalamanCapaianKinerja/ambil_sasaran_jabatan_periode_ini';
+$route['ambil_detail_pk_periode_sebelumnya'] = 'HalamanCapaianKinerja/ambil_detail_pk_periode_sebelumnya';
 
 $route['show_indikator'] = 'HalamanCapaianKinerja/show_indikator';
 $route['simpan_indikator'] = 'HalamanCapaianKinerja/simpan_indikator';
@@ -55,6 +56,7 @@ $route['validasi_penilaian_pck'] = 'HalamanCapaianKinerja/validasi_penilaian_pck
 $route['monitoring_penilaian_dt'] = 'HalamanCapaianKinerja/monitoring_penilaian_dt';
 $route['monitoring_penilaian_filters'] = 'HalamanCapaianKinerja/monitoring_penilaian_filters';
 $route['get_data_pck'] = 'HalamanLaporan/get_data_pck';
+$route['ambil_pck_periode_sebelumnya'] = 'HalamanCapaianKinerja/ambil_pck_periode_sebelumnya';
 
 $route['get_statistik_dashboard'] = 'HalamanUtama/get_statistik_dashboard';
 $route['get_statistik_dashboard_pck'] = 'HalamanUtama/get_statistik_dashboard_pck';

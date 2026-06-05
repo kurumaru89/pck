@@ -70,7 +70,14 @@ class HalamanUtama extends MY_Controller
                 }
 
             } elseif ($halaman == 'penilaian_pck') {
+                $data['struktural'] = $this->session->userdata('struktural');
                 $data['ketua'] = $this->session->userdata('ketua');
+                #die(var_dump($this->encryption->decrypt(base64_decode($this->input->get('id')))));
+                $periode_id = $this->encryption->decrypt(base64_decode($this->input->get('id')));
+
+                $data_periode = $this->model->get_seleksi('pk_periode', 'id', $periode_id)->row();
+                $data['id_jabatan_pegawai'] = $data_periode->id_jabatan_pegawai;
+                $data['id_jabatan_sekarang'] = $this->session->userdata('jab_id');
             } elseif ($halaman == 'detail_pengisian_pck') {
                 $id = $this->encryption->decrypt(base64_decode($this->input->get('id')));
                 $data_pck = $this->model->get_seleksi_array('ck_penilaian', ['id' => $id]);
