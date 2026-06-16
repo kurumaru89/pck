@@ -155,64 +155,6 @@
         }
     }
 
-    // ─── Skeleton Loader ───
-    function showSkeleton(container) {
-        const skeletonHTML = `
-        <div class="skeleton-wrapper">
-            <div class="skeleton-header">
-                <div class="skeleton skeleton-title"></div>
-                <div class="skeleton skeleton-text" style="width:40%"></div>
-            </div>
-            <div class="row stagger-children">
-                <div class="col-md-3">
-                    <div class="glass-card">
-                        <div class="glass-card-body">
-                            <div class="skeleton skeleton-text"></div>
-                            <div class="skeleton skeleton-text" style="width:60%"></div>
-                            <div class="skeleton skeleton-row"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="glass-card">
-                        <div class="glass-card-body">
-                            <div class="skeleton skeleton-text"></div>
-                            <div class="skeleton skeleton-text" style="width:60%"></div>
-                            <div class="skeleton skeleton-row"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="glass-card">
-                        <div class="glass-card-body">
-                            <div class="skeleton skeleton-text"></div>
-                            <div class="skeleton skeleton-text" style="width:60%"></div>
-                            <div class="skeleton skeleton-row"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="glass-card">
-                        <div class="glass-card-body">
-                            <div class="skeleton skeleton-text"></div>
-                            <div class="skeleton skeleton-text" style="width:60%"></div>
-                            <div class="skeleton skeleton-row"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="glass-card mt-4">
-                <div class="glass-card-body">
-                    <div class="skeleton skeleton-text"></div>
-                    ${Array.from({length: 5}, () =>
-                        '<div class="skeleton skeleton-row"></div>'
-                    ).join('')}
-                </div>
-            </div>
-        </div>`;
-        container.innerHTML = skeletonHTML;
-    }
-
     // ─── Ripple Effect ───
     function createRipple(event) {
         const button = event.currentTarget;
@@ -464,7 +406,6 @@
     // ─── Public API ───
     window.ModernUI = {
         init: initModernUI,
-        showSkeleton,
         animateContent,
         showPageLoader,
         hidePageLoader,

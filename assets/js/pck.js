@@ -252,6 +252,205 @@ function info(pesan) {
     });
 }
 
+function getPhantomTemplate(page) {
+    // Komponen kecil yang sering dipakai ulang
+    var bar = function (w) { return '<div class="skeleton" style="height:14px;width:' + (w || '100%') + '"></div>'; };
+    var titleBlock = '<div class="skeleton" style="height:24px;width:55%;margin-bottom:8px"></div>' +
+                     '<div class="skeleton" style="height:14px;width:75%"></div>';
+    var pageHeader = '<div class="hk-pg-header"><div>' + titleBlock + '</div></div>';
+    var pageHeaderWithBtn = '<div class="hk-pg-header"><div>' + titleBlock + '</div>' +
+                            '<div><div class="skeleton" style="height:42px;width:170px;border-radius:6px"></div></div></div>';
+    var breadcrumb = '<nav class="hk-breadcrumb" aria-label="breadcrumb"><ol class="breadcrumb">' +
+                     '<li class="breadcrumb-item"><div class="skeleton" style="height:12px;width:60px"></div></li>' +
+                     '<li class="breadcrumb-item active"><div class="skeleton" style="height:12px;width:120px"></div></li>' +
+                     '</ol></nav>';
+    var alert = '<div class="row"><div class="col-xl-12"><div class="alert alert-primary" role="alert">' +
+                '<div class="skeleton" style="height:14px;width:80%"></div></div></div></div>';
+    var infoAlert = '<div class="row"><div class="col-12"><div class="alert alert-info" role="alert">' +
+                    '<div class="skeleton" style="height:14px;width:60%"></div></div></div></div>';
+
+    // Card dengan header + baris tabel
+    var tableCard = function (rowCount) {
+        rowCount = rowCount || 4;
+        var rows = '';
+        for (var i = 0; i < rowCount; i++) {
+            rows += '<div class="skeleton" style="height:48px;border-radius:6px"></div>';
+        }
+        return '<div class="row"><div class="col"><div class="card"><div class="card-body">' +
+               '<div class="skeleton" style="height:20px;width:30%;margin-bottom:16px"></div>' +
+               '<div style="display:flex;flex-direction:column;gap:8px">' +
+               '<div class="skeleton" style="height:40px;border-radius:6px"></div>' +
+               rows +
+               '</div></div></div></div></div>';
+    };
+
+    // Card dengan info 2 kolom (untuk detail PK / PCK)
+    var infoCard2Col = function (rowCount) {
+        rowCount = rowCount || 5;
+        var rows = '';
+        for (var i = 0; i < rowCount; i++) {
+            rows += '<div class="d-flex" style="gap:16px;padding:8px 0">' +
+                    '<div class="skeleton" style="height:14px;width:35%"></div>' +
+                    '<div class="skeleton" style="height:14px;width:55%"></div></div>';
+        }
+        return '<div class="row"><div class="col"><div class="card card-primary card-outline">' +
+               '<div class="card-header card-header-action">' +
+               '<div class="skeleton" style="height:20px;width:30%"></div>' +
+               '<div class="d-flex" style="gap:8px">' +
+               '<div class="skeleton" style="height:30px;width:80px;border-radius:6px"></div>' +
+               '<div class="skeleton" style="height:30px;width:80px;border-radius:6px"></div>' +
+               '</div></div>' +
+               '<div class="card-body"><div class="row"><div class="col-md-6">' + rows + '</div>' +
+               '<div class="col-md-6">' + rows + '</div></div></div></div></div></div>';
+    };
+
+    // Card dengan form select
+    var selectCard = function () {
+        return '<div class="row"><div class="col"><div class="card card-primary card-outline">' +
+               '<div class="card-header card-header-action">' +
+               '<div class="skeleton" style="height:20px;width:35%"></div>' +
+               '<div class="skeleton" style="height:30px;width:80px;border-radius:6px"></div>' +
+               '</div>' +
+               '<div class="card-body">' +
+               '<div class="skeleton" style="height:16px;width:25%;margin-bottom:6px"></div>' +
+               '<div class="skeleton" style="height:14px;width:60%;margin-bottom:12px"></div>' +
+               '<div class="skeleton" style="height:42px;border-radius:6px"></div>' +
+               '</div></div></div></div>';
+    };
+
+    // Tab header + tabel
+    var tabHeader = '<div class="row"><div class="col"><div class="card">' +
+                    '<div class="card-header p-0"><ul class="nav nav-tabs">' +
+                    '<li class="nav-item"><a class="nav-link active"><div class="skeleton" style="height:14px;width:120px"></div></a></li>' +
+                    '<li class="nav-item"><a class="nav-link"><div class="skeleton" style="height:14px;width:120px"></div></a></li>' +
+                    '</ul></div>' +
+                    '<div class="card-body">' + tableCard(4) + '</div></div></div></div>';
+
+    // Tombol toolbar kanan
+    var rightToolbar = '<div class="row"><div class="col"><div class="d-flex mb-0 flex-wrap justify-content-end">' +
+                       '<div class="skeleton" style="height:32px;width:90px;border-radius:6px;margin-right:8px"></div>' +
+                       '<div class="skeleton" style="height:32px;width:170px;border-radius:6px"></div>' +
+                       '</div></div></div>';
+
+    // Chart placeholder
+    var chartBox = function () {
+        return '<div class="skeleton" style="height:320px;border-radius:8px"></div>';
+    };
+
+    // Daftar list (untuk panduan / dokumentasi)
+    var listItem = '<li class="ph-item"><div class="skeleton" style="height:14px;width:85%;margin-bottom:6px"></div></li>';
+    var listBlock = function (n) {
+        var s = '<ul class="ph-list" style="list-style:none;padding-left:0">';
+        for (var i = 0; i < (n || 4); i++) s += listItem;
+        return s + '</ul>';
+    };
+
+    var docTable = function () {
+        var html = '<div class="table-responsive"><table class="table table-sm table-bordered"><thead class="thead-light"><tr>' +
+                   '<th><div class="skeleton" style="height:12px;width:80%"></div></th>' +
+                   '<th><div class="skeleton" style="height:12px;width:80%"></div></th>' +
+                   '<th><div class="skeleton" style="height:12px;width:80%"></div></th>' +
+                   '</tr></thead><tbody>';
+        for (var r = 0; r < 6; r++) {
+            html += '<tr><td><div class="skeleton" style="height:12px;width:90%"></div></td>' +
+                    '<td><div class="skeleton" style="height:12px;width:90%"></div></td>' +
+                    '<td><div class="skeleton" style="height:12px;width:90%"></div></td></tr>';
+        }
+        return html + '</tbody></table></div>';
+    };
+
+    switch (page) {
+        case 'dashboard':
+            return pageHeader + alert +
+                '<div class="row mb-2">' +
+                  '<div class="col-xl-7 mb-2"><div class="card mb-0">' +
+                    '<div class="card-header"><div class="skeleton" style="height:18px;width:40%"></div>' +
+                    '<div class="skeleton" style="height:12px;width:60%;margin-top:6px"></div></div>' +
+                    '<div class="card-body">' +
+                      '<div class="skeleton" style="height:20px;width:100%;margin-bottom:8px"></div>' +
+                      '<div class="skeleton" style="height:16px;width:100%;margin-bottom:4px"></div>' +
+                      '<div class="skeleton" style="height:16px;width:100%;margin-bottom:4px"></div>' +
+                      '<div class="skeleton" style="height:16px;width:100%;margin-bottom:4px"></div>' +
+                    '</div></div></div>' +
+                  '<div class="col-xl-5"><div class="card mb-0">' +
+                    '<div class="card-header"><div class="skeleton" style="height:18px;width:50%"></div></div>' +
+                    '<div class="card-body">' + chartBox() + '</div>' +
+                  '</div></div>' +
+                '</div>' +
+                '<div class="row mb-2">' +
+                  '<div class="col-xl-6 mb-2"><div class="card mb-0"><div class="card-header">' +
+                    '<div class="skeleton" style="height:18px;width:45%"></div></div>' +
+                    '<div class="card-body">' + chartBox() + '</div></div></div>' +
+                  '<div class="col-xl-6"><div class="card mb-0"><div class="card-header">' +
+                    '<div class="skeleton" style="height:18px;width:45%"></div></div>' +
+                    '<div class="card-body">' + chartBox() + '</div></div></div>' +
+                '</div>' +
+                '<div class="row mb-2"><div class="col-xl-12"><div class="card mb-0"><div class="card-header">' +
+                  '<div class="skeleton" style="height:18px;width:35%"></div></div>' +
+                  '<div class="card-body">' + chartBox() + '</div></div></div></div>';
+
+        case 'pck':
+            return pageHeaderWithBtn + alert + tableCard(5);
+
+        case 'monitoring':
+            return pageHeader + breadcrumb +
+                '<div class="row"><div class="col"><div class="card"><div class="card-body">' +
+                  '<div class="row mb-3">' +
+                    '<div class="col-md-5"><div class="skeleton" style="height:42px;border-radius:6px"></div></div>' +
+                    '<div class="col-md-3"><div class="skeleton" style="height:42px;border-radius:6px"></div></div>' +
+                    '<div class="col-md-4"><div class="skeleton" style="height:42px;border-radius:6px"></div></div>' +
+                  '</div>' +
+                  '<div style="display:flex;flex-direction:column;gap:8px">' +
+                    '<div class="skeleton" style="height:44px;border-radius:6px"></div>' +
+                    '<div class="skeleton" style="height:52px;border-radius:6px"></div>' +
+                    '<div class="skeleton" style="height:52px;border-radius:6px"></div>' +
+                    '<div class="skeleton" style="height:52px;border-radius:6px"></div>' +
+                    '<div class="skeleton" style="height:52px;border-radius:6px"></div>' +
+                  '</div>' +
+                '</div></div></div></div>';
+
+        case 'validasi_pk':
+            return breadcrumb + selectCard() + tableCard(5);
+
+        case 'penilaian_pck':
+            return pageHeader + breadcrumb + rightToolbar + tabHeader;
+
+        case 'detail_pk':
+            return pageHeader + breadcrumb + infoCard2Col(5) + tableCard(6);
+
+        case 'detail_pengisian_pck':
+            return pageHeader + breadcrumb + infoCard2Col(4) + tableCard(6);
+
+        case 'detail_evaluasi_pck':
+            return breadcrumb + selectCard() + tableCard(5);
+
+        case 'panduan_penggunaan':
+            return pageHeader + breadcrumb +
+                '<div class="row"><div class="col-12"><div class="card"><div class="card-body">' +
+                Array.from({ length: 8 }, function (_, i) {
+                    return '<div class="skeleton" style="height:18px;width:' + (20 + i * 4) + '%;margin:14px 0 8px"></div>' +
+                           listBlock(2) + '<hr>';
+                }).join('') +
+                '</div></div></div></div>';
+
+        case 'dokumentasi_teknis':
+            return pageHeader + breadcrumb + infoAlert +
+                '<div class="row"><div class="col-12"><div class="card"><div class="card-body">' +
+                Array.from({ length: 7 }, function (_, i) {
+                    return '<div class="skeleton" style="height:18px;width:' + (22 + i * 3) + '%;margin:14px 0 8px"></div>' +
+                           listBlock(3) + '<hr>';
+                }).join('') +
+                '<div class="skeleton" style="height:18px;width:30%;margin:14px 0 8px"></div>' +
+                docTable() +
+                '<div class="skeleton" style="height:18px;width:25%;margin:14px 0 8px"></div>' +
+                listBlock(5) +
+                '</div></div></div></div>';
+
+        default:
+            return pageHeader + tableCard(5);
+    }
+}
+
 function loadPage(page, id) {
     // Guard: prevent double-load within 800ms
     var now = Date.now();
@@ -267,8 +466,8 @@ function loadPage(page, id) {
     $app.css({ opacity: '0', transform: 'translateY(8px)', transition: 'opacity 200ms ease-in, transform 200ms ease-in' });
 
     setTimeout(function () {
-        // Show skeleton loader
-        ModernUI.showSkeleton($app.get(0));
+        // Show phantom UI (skeleton yang meniru layout halaman tujuan)
+        $app.html(getPhantomTemplate(page));
         $app.css({ opacity: '1', transform: 'translateY(0)' });
 
         var params = {};
