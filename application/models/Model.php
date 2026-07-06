@@ -168,6 +168,7 @@ class Model extends CI_Model
         $this->db->where('pe.jabatan_id_penilai', '1');
         $this->db->where('pe.tahun', $tahun);
         $this->db->where('p.hapus', 0);
+        $this->db->order_by('p.bulan', 'ASC');
         $this->db->group_by('p.bulan');
 
         return $this->db->get();

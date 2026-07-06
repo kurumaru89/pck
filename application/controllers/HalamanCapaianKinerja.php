@@ -540,7 +540,7 @@ class HalamanCapaianKinerja extends MY_Controller
             }
         } else {
             $periode_id = $this->encryption->decrypt(base64_decode($this->input->post('periode_id')));
-            $query = $this->model->get_seleksi_array('ck_penilaian', ['periode_id' => $periode_id])->result();
+            $query = $this->model->get_seleksi_array('ck_penilaian', ['periode_id' => $periode_id], ['bulan' => 'ASC'])->result();
 
             $data = [];
             foreach ($query as $row) {
