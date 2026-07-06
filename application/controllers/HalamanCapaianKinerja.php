@@ -1064,8 +1064,6 @@ class HalamanCapaianKinerja extends MY_Controller
             $penilaian_id_raw = $this->encryption->decrypt(base64_decode($this->input->post('penilaian_id')));
             $stat = $this->model->ambil_stat_uraian_tugas_penilaian([$penilaian_id_raw]);
             $stat_row = isset($stat[$penilaian_id_raw]) ? $stat[$penilaian_id_raw] : ['sudah_dinilai' => 0, 'belum_dinilai' => 0];
-
-            $uraian_data = $this->model->get_seleksi_array('ck_uraian_tugas', ['id' => $this->input->post('uraian_id')])->row();
             
             echo json_encode([
                 'success' => 1,
