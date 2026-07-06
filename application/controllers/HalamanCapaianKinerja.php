@@ -1066,16 +1066,7 @@ class HalamanCapaianKinerja extends MY_Controller
             $stat_row = isset($stat[$penilaian_id_raw]) ? $stat[$penilaian_id_raw] : ['sudah_dinilai' => 0, 'belum_dinilai' => 0];
 
             $uraian_data = $this->model->get_seleksi_array('ck_uraian_tugas', ['id' => $this->input->post('uraian_id')])->row();
-            $dataNotif = array(
-                'jenis_pesan' => 'pck',
-                'id_pemohon' => $this->session->userdata('pegawai_id'),
-                'pesan' => 'Assalamualaikum Wr. Wb. Tugas anda telah diberi nilai oleh atasan, Terima Kasih',
-                'id_tujuan' => $uraian_data->created_by,
-                'created_by' => $this->session->userdata('fullname'),
-                'created_on' => date('Y-m-d H:i:s')
-            );
-
-            $this->model->kirim_notif($dataNotif);
+            
             echo json_encode([
                 'success' => 1,
                 'message' => $result['message'],

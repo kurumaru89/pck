@@ -345,11 +345,11 @@ class Model extends CI_Model
         $capaian_id = $uraian_data->capaian_id;
 
         $queryCapaian = $this->update_rata_rata_pck($capaian_id);
-
+        $queryPenilaian = $this->update_penilaian($capaian_id);
         $this->db->trans_complete();
 
         if ($query == 1) {
-            if ($queryCapaian == 1)
+            if ($queryCapaian == 1 && $queryPenilaian == 1)
                 return ['status' => true, 'message' => 'Uraian Tugas Berhasil Disimpan, Capaian Indikator Berhasil Diperbarui'];
             else
                 return ['status' => true, 'message' => 'Uraian Tugas Berhasil Disimpan, Capaian Indikator Gagal Diperbarui'];
@@ -368,6 +368,27 @@ class Model extends CI_Model
         $rata_rata = round($query->rata_rata, 2);
 
         return $this->pembaharuan_data('ck_capaian_indikator', ['capaian' => $rata_rata], 'id', $capaian_id);
+    }
+
+    public function update_penilaian($capaian_id)
+    {
+        $this->db->trans_start();
+        $this->db->select('penilaian_id');
+        $this->db->where('id', $capaian_id);
+        $this->db->where('hapus', 0);
+        $penilaian_id = $this->db->get('ck_capaian_indikator')->row()->penilaian_id;
+
+        $this->db->select_avg('capaian', 'penilaian');
+        $this->db->where('penilaian_id', $penilaian_id);
+        $this->db->where('hapus', 0);
+        $query_update = $this->db->get('ck_capaian_indikator')->row();
+
+        $rata_rata = round($query_update->penilaian, 2);
+
+        $query_nilai = $this->pembaharuan_data('ck_penilaian', ['nilai' => $rata_rata], 'id', $penilaian_id);
+
+        $this->db->trans_complete();
+        return $query_nilai;
     }
 
     public function proses_hapus_nilai_uraian_tugas($uraian_id)
