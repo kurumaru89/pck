@@ -5,12 +5,14 @@ class ApiHelper
 {
     protected $CI;
     protected $url_api;
+    protected $api_key;
 
     public function __construct()
     {
         // Ambil instance CI dan URL API dari config
         $this->CI =& get_instance();
         $this->url_api = rtrim($this->CI->config->item('sso_server'), '/') . '/';
+        $this->api_key = $this->CI->config->item('api_key');
     }
 
     /**
@@ -24,6 +26,11 @@ class ApiHelper
     public function get($endpoint, $params = [], $headers = [])
     {
         $full_url = $this->url_api . ltrim($endpoint, '/');
+
+        // Auto-inject api_key untuk autentikasi SSO
+        if (!empty($this->api_key)) {
+            $params['api_key'] = $this->api_key;
+        }
 
         // Tambahkan query string jika ada parameter
         if (!empty($params)) {
@@ -50,6 +57,11 @@ class ApiHelper
 
     public function get2($endpoint, $params = [], $headers = [])
     {
+        // Auto-inject api_key untuk autentikasi SSO
+        if (!empty($this->api_key)) {
+            $params['api_key'] = $this->api_key;
+        }
+
         // Tambahkan query string jika ada parameter
         if (!empty($params)) {
             $endpoint .= '?' . http_build_query($params);
@@ -77,6 +89,11 @@ class ApiHelper
     {
         $full_url = $this->url_api . ltrim($endpoint, '/');
 
+        // Auto-inject api_key untuk autentikasi SSO
+        if (!empty($this->api_key)) {
+            $payload['api_key'] = $this->api_key;
+        }
+
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, $full_url);
@@ -100,6 +117,11 @@ class ApiHelper
     public function patch($endpoint, $payload = [], $headers = [])
     {
         $full_url = $this->url_api . ltrim($endpoint, '/');
+
+        // Auto-inject api_key untuk autentikasi SSO
+        if (!empty($this->api_key)) {
+            $payload['api_key'] = $this->api_key;
+        }
 
         $ch = curl_init();
 
