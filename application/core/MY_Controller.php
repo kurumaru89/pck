@@ -63,6 +63,7 @@ class MY_Controller extends CI_Controller
                     $this->session->set_userdata('pegawai_id', $user_data['pegawai_id']);
                     $this->session->set_userdata('id_grup', $user_data['id_grup']);
                     $this->session->set_userdata('id_jabatan_atasan', $user_data['id_jab_atasan']);
+                    $this->session->set_userdata('nip', $user_data['nip']);
                 }
 
                 $params = [

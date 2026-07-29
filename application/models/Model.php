@@ -210,6 +210,7 @@ class Model extends CI_Model
             $dataPeserta['id_jabatan_pegawai'] = $this->session->userdata('jab_id');
             $dataPeserta['jabatan_pegawai'] = $this->session->userdata('jabatan');
             $dataPeserta['jabatan_id_penilai'] = $this->session->userdata('id_jabatan_atasan');
+            $dataPeserta['nip'] = $this->session->userdata('nip');
             $dataPeserta['created_on'] = date('Y-m-d H:i:s');
             $dataPeserta['created_by'] = $this->session->userdata('pegawai_id');
             $query = $this->simpan_data('pk_periode', $dataPeserta);
