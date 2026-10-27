@@ -6,11 +6,11 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
-	'database' => 'pck',
-	'dbdriver' => 'mysqli',
+	'hostname' => env('DB_HOST'),
+	'username' => env('DB_USER'),
+	'password' => env('DB_PASS'),
+	'database' => env('DB_NAME'),
+	'dbdriver' => env('DB_DRIVER'),
 	'dbprefix' => '',
 	'pconnect' => FALSE,
 	'db_debug' => (ENVIRONMENT !== 'production'),
